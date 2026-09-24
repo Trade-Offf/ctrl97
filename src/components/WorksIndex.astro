@@ -1,0 +1,81 @@
+---
+import { getRelativeLocaleUrl } from "astro:i18n";
+import { formatDate, useTranslations, type Locale } from "../i18n/ui";
+import { entrySlug, getWorks } from "../lib/content";
+import { workStatusOrder } from "../lib/taxonomy";
+import BaseLayout from "../layouts/BaseLayout.astro";
+import EmptyState from "./EmptyState.astro";
+import ProjectCard from "./ProjectCard.astro";
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const t = useTranslations(locale);
+const works = await getWorks(locale);
+const groups = workStatusOrder
+  .map((status) => ({
+    status,
+    items: works.filter((work) => work.data.status === status),
+  }))
+  .filter((group) => group.items.length > 0);
+---
+
+<BaseLayout
+  locale={locale}
+  title={`${t.works} — Ctrl97`}
+  description={t.worksLead}
+  alternates={{
+    zh: getRelativeLocaleUrl("zh", "/works"),
+    en: getRelativeLocaleUrl("en", "/works"),
+  }}
+>
+  <div class="page">
+    <h1>{t.works}</h1>
+    <p class="lead">{t.worksLead}</p>
+    {groups.length === 0 ? (
+      <div class="empty-wrap">
+        <EmptyState message={t.emptyWorks} />
+      </div>
+    ) : (
+      groups.map((group) => (
+        <section class="group">
+          <h2>{t.statusLabel[group.status]}</h2>
+          <ul class="cards">
+            {group.items.map((work) => (
+              <li>
+                <ProjectCard
+                  title={work.data.title}
+                  summary={work.data.description}
+                  status={work.data.status}
+                  statusLabel={t.statusLabel[work.data.status]}
+                  date={work.data.publishedAt}
+                  dateLabel={formatDate(locale, work.data.publishedAt)}
+                  href={getRelativeLocaleUrl(
+                    locale,
+                    `/works/${entrySlug(work.id)}`,
+                  )}
+                />
+              </li>
+            ))}
+          </ul>
+        </section>
+      ))
+    )}
+  </div>
+</BaseLayout>
+
+<style>
+  .cards {
+    display: grid;
+    gap: 12px;
+    margin: 16px 0 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .empty-wrap {
+    margin-top: 32px;
+  }
+</style>

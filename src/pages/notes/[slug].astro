@@ -1,0 +1,16 @@
+---
+import NoteDetail from "../../components/NoteDetail.astro";
+import { notePaths } from "../../lib/content";
+
+export async function getStaticPaths() {
+  return notePaths("zh");
+}
+
+const slug = Astro.params.slug;
+
+if (!slug) {
+  throw new Error("Missing note slug");
+}
+---
+
+<NoteDetail locale="zh" slug={slug} />

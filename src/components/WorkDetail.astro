@@ -1,0 +1,156 @@
+---
+import { render } from "astro:content";
+import { getRelativeLocaleUrl } from "astro:i18n";
+import {
+  formatDate,
+  otherLocale,
+  useTranslations,
+  type Locale,
+} from "../i18n/ui";
+import { entrySlug, getWork } from "../lib/content";
+import BaseLayout from "../layouts/BaseLayout.astro";
+import StatusBadge from "./StatusBadge.astro";
+
+interface Props {
+  locale: Locale;
+  slug: string;
+}
+
+const { locale, slug } = Astro.props;
+const t = useTranslations(locale);
+const work = await getWork(locale, slug);
+
+if (!work) {
+  throw new Error(`Missing work: ${locale}/${slug}`);
+}
+
+const { Content } = await render(work);
+const other = otherLocale(locale);
+const translated = await getWork(other, slug);
+const languageHref = translated
+  ? getRelativeLocaleUrl(other, `/works/${entrySlug(work.id)}`)
+  : getRelativeLocaleUrl(other, "/works");
+const tone =
+  work.data.status === "paused" || work.data.status === "archived"
+    ? "neutral"
+    : "accent";
+const published = work.data.publishedAt.toISOString().slice(0, 10);
+---
+
+<BaseLayout
+  locale={locale}
+  title={`${work.data.title} — Ctrl97`}
+  description={work.data.description}
+  languageHref={languageHref}
+  alternates={
+    translated
+      ? {
+          zh: getRelativeLocaleUrl("zh", `/works/${slug}`),
+          en: getRelativeLocaleUrl("en", `/works/${slug}`),
+        }
+      : undefined
+  }
+>
+  <article class="page">
+    <p class="kicker">
+      <StatusBadge tone={tone}>{t.statusLabel[work.data.status]}</StatusBadge>
+    </p>
+    <h1>{work.data.title}</h1>
+    <p class="lead">{work.data.description}</p>
+    <p class="meta-row">
+      <span>
+        {t.published}
+        <time datetime={published}>
+          {formatDate(locale, work.data.publishedAt)}
+        </time>
+      </span>
+    </p>
+    {work.data.cover && (
+      <img class="cover" src={work.data.cover} alt={work.data.title} />
+    )}
+    {(work.data.role ||
+      work.data.website ||
+      work.data.repository ||
+      work.data.note) && (
+      <ul class="facts">
+        {work.data.role && (
+          <li>
+            <span>{t.role}</span>
+            <span>{work.data.role}</span>
+          </li>
+        )}
+        {work.data.website && (
+          <li>
+            <span>{t.website}</span>
+            <a href={work.data.website} rel="noreferrer">
+              {work.data.website}
+            </a>
+          </li>
+        )}
+        {work.data.repository && (
+          <li>
+            <span>{t.repository}</span>
+            <a href={work.data.repository} rel="noreferrer">
+              {work.data.repository}
+            </a>
+          </li>
+        )}
+        {work.data.note && (
+          <li>
+            <span>{t.aside}</span>
+            <span>{work.data.note}</span>
+          </li>
+        )}
+      </ul>
+    )}
+    {work.data.stack.length > 0 && (
+      <ul class="stack">
+        {work.data.stack.map((item) => (
+          <li>{item}</li>
+        ))}
+      </ul>
+    )}
+    {work.data.metrics && work.data.metrics.length > 0 && (
+      <section class="group" aria-label={t.record}>
+        <h2>{t.record}</h2>
+        <ul class="facts">
+          {work.data.metrics.map((metric) => (
+            <li>
+              <span>{metric.label}</span>
+              <span>
+                {metric.value}
+                {" · "}
+                <time datetime={metric.asOf.toISOString().slice(0, 10)}>
+                  {formatDate(locale, metric.asOf)}
+                </time>
+                {" · "}
+                <a href={metric.source} rel="noreferrer">
+                  {metric.source}
+                </a>
+              </span>
+            </li>
+          ))}
+        </ul>
+      </section>
+    )}
+    <div class="prose">
+      <Content />
+    </div>
+  </article>
+</BaseLayout>
+
+<style>
+  .kicker {
+    margin: 0 0 16px;
+  }
+
+  .cover {
+    display: block;
+    width: 100%;
+    max-width: 720px;
+    height: auto;
+    margin-top: 24px;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+  }
+</style>

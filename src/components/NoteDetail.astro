@@ -1,0 +1,122 @@
+---
+import { render } from "astro:content";
+import { getRelativeLocaleUrl } from "astro:i18n";
+import {
+  formatDate,
+  otherLocale,
+  readingLabel,
+  useTranslations,
+  type Locale,
+} from "../i18n/ui";
+import { entrySlug, getNote, readingMinutes } from "../lib/content";
+import BaseLayout from "../layouts/BaseLayout.astro";
+
+interface Props {
+  locale: Locale;
+  slug: string;
+}
+
+const { locale, slug } = Astro.props;
+const t = useTranslations(locale);
+const note = await getNote(locale, slug);
+
+if (!note) {
+  throw new Error(`Missing note: ${locale}/${slug}`);
+}
+
+const { Content, headings } = await render(note);
+const toc = headings.filter(
+  (heading) => heading.depth === 2 || heading.depth === 3,
+);
+const other = otherLocale(locale);
+const translated = await getNote(other, slug);
+const languageHref = translated
+  ? getRelativeLocaleUrl(other, `/notes/${entrySlug(note.id)}`)
+  : getRelativeLocaleUrl(other, "/notes");
+const published = note.data.publishedAt.toISOString().slice(0, 10);
+const updated = note.data.updatedAt?.toISOString().slice(0, 10);
+const minutes = readingMinutes(note.body ?? "");
+---
+
+<BaseLayout
+  locale={locale}
+  title={`${note.data.title} — Ctrl97`}
+  description={note.data.description}
+  languageHref={languageHref}
+  alternates={
+    translated
+      ? {
+          zh: getRelativeLocaleUrl("zh", `/notes/${slug}`),
+          en: getRelativeLocaleUrl("en", `/notes/${slug}`),
+        }
+      : undefined
+  }
+>
+  <article class="page">
+    <p class="kicker">{t.categoryLabel[note.data.category]}</p>
+    <h1>{note.data.title}</h1>
+    <p class="lead">{note.data.description}</p>
+    <p class="meta-row">
+      <span>
+        {t.published}
+        <time datetime={published}>
+          {formatDate(locale, note.data.publishedAt)}
+        </time>
+      </span>
+      {note.data.updatedAt && updated && (
+        <span>
+          {t.updated}
+          <time datetime={updated}>
+            {formatDate(locale, note.data.updatedAt)}
+          </time>
+        </span>
+      )}
+      <span>{readingLabel(locale, minutes)}</span>
+    </p>
+    {note.data.cover && (
+      <img class="cover" src={note.data.cover} alt={note.data.title} />
+    )}
+    {note.data.tags.length > 0 && (
+      <ul class="stack">
+        {note.data.tags.map((tag) => (
+          <li>{tag}</li>
+        ))}
+      </ul>
+    )}
+    {toc.length > 0 && (
+      <nav class="toc" aria-label={t.toc}>
+        <p>{t.toc}</p>
+        <ol>
+          {toc.map((heading) => (
+            <li class:list={{ "depth-3": heading.depth === 3 }}>
+              <a href={`#${heading.slug}`}>{heading.text}</a>
+            </li>
+          ))}
+        </ol>
+      </nav>
+    )}
+    <div class="prose">
+      <Content />
+    </div>
+  </article>
+</BaseLayout>
+
+<style>
+  .kicker {
+    margin: 0;
+    color: var(--muted-strong);
+    font-family: var(--font-mono);
+    font-size: 12px;
+    line-height: 16px;
+  }
+
+  .cover {
+    display: block;
+    width: 100%;
+    max-width: 720px;
+    height: auto;
+    margin-top: 24px;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+  }
+</style>

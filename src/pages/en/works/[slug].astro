@@ -1,0 +1,16 @@
+---
+import WorkDetail from "../../../components/WorkDetail.astro";
+import { workPaths } from "../../../lib/content";
+
+export async function getStaticPaths() {
+  return workPaths("en");
+}
+
+const slug = Astro.params.slug;
+
+if (!slug) {
+  throw new Error("Missing work slug");
+}
+---
+
+<WorkDetail locale="en" slug={slug} />

@@ -63,11 +63,9 @@ Ctrl97 是 Rico 的个人主页、产品实验室、作品档案和写作空间�
 
 给定色板没有深色试验色。`#FF8F66` 只做状态标记，标签仍用正文色。浅色 `#FF6B35` 在浅底上是 2.64:1，同样不能做文字。
 
-## D10 不设指标字段
+## D10 指标必须带来源
 
-Works 和 Notes 的 schema 不包含用户数、收入、下载量或星标。首页也不留数字展示位。
-
-这些数字一旦有字段，就容易在没有来源时被填上。确需公开某个数字时，写在正文里，并写上来源和日期。
+首页不留数字展示位。作品可以有可选的 `metrics`，但每一项都必须有 `source` 和 `asOf`。没有来源的用户数、收入、下载量、星标或客户不能写入内容。详见 D15。
 
 ## D11 仓库属主不是公开身份
 
@@ -94,3 +92,17 @@ Git 远程是 `git@github.com:Trade-Offf/ctrl97.git`。`Trade-Offf` 只说明仓
 首页内容宽度是 880px，阅读宽度是 720px。控件圆角 8px，卡片圆角 12px。这是阶段 2 的页面规格。后续页面沿用 880px 栏宽，除非另有决定。
 
 页脚的 GitHub 是文字链接，指向仓库 `https://github.com/Trade-Offf/ctrl97`。页面上不写属主名称。RSS 只占位，不是可用订阅。
+
+## D15 作品与笔记的内容模型
+
+阶段 3 的页面规格替换阶段 0 写在 CONTENT.md 里的字段。实现以更新后的 CONTENT.md 为准。
+
+作品字段是 title、description、publishedAt、status、featured、role、stack、cover、website、repository、note、metrics、draft。状态只有 building、shipped、paused、archived。不再使用 experimental、summary、year、url、repo、tags、order。
+
+笔记增加 category、cover、featured。栏目只有 enter、undo、save、find。列表按状态或栏目分组，空组不显示。首页精选作品只读 `featured` 且非草稿的作品；首页最近笔记读非草稿笔记，不要求 featured。
+
+`draft: true` 不出现在列表、未来的 RSS 和生产构建里。开发环境仍可打开草稿详情，用来核对过滤。
+
+语言切换在对方存在同一 slug 时进入该页，否则进入栏目索引。hreflang 只在两种语言都有对应地址时输出。
+
+当前仓库里的作品和笔记都是版式示例。标题、摘要和正文必须标明示例内容、待替换、不代表真实数据。不把它们当成 Rico 的产品或文章。

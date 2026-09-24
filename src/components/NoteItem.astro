@@ -1,26 +1,18 @@
 ---
-import type { Locale } from "../i18n/ui";
-
 interface Props {
   title: string;
   href: string;
   publishedAt: string;
-  locale: Locale;
+  dateLabel: string;
+  kicker?: string;
 }
 
-const { title, href, publishedAt, locale } = Astro.props;
-const date = new Date(publishedAt);
-const formatted = Number.isNaN(date.getTime())
-  ? publishedAt
-  : new Intl.DateTimeFormat(locale === "zh" ? "zh-Hans" : "en", {
-      year: "numeric",
-      month: "short",
-      day: "numeric",
-    }).format(date);
+const { title, href, publishedAt, dateLabel, kicker } = Astro.props;
 ---
 
 <article class="note">
-  <time datetime={publishedAt}>{formatted}</time>
+  {kicker && <p class="kicker">{kicker}</p>}
+  <time datetime={publishedAt}>{dateLabel}</time>
   <h3>
     <a href={href}>{title}</a>
   </h3>
@@ -33,6 +25,7 @@ const formatted = Number.isNaN(date.getTime())
     border-bottom: 1px solid var(--border);
   }
 
+  .kicker,
   time {
     display: block;
     color: var(--muted-strong);
@@ -43,6 +36,7 @@ const formatted = Number.isNaN(date.getTime())
 
   h3 {
     margin: 4px 0 0;
+    overflow-wrap: anywhere;
     font-size: 20px;
     font-weight: 500;
     line-height: 28px;

@@ -1,5 +1,5 @@
 ---
-import type { WorkStatus } from "../data/works";
+import type { WorkStatus } from "../lib/taxonomy";
 import StatusBadge from "./StatusBadge.astro";
 
 interface Props {
@@ -7,25 +7,22 @@ interface Props {
   summary: string;
   status: WorkStatus;
   statusLabel: string;
-  year: number;
+  date: Date;
+  dateLabel: string;
   href?: string;
 }
 
-const { title, summary, status, statusLabel, year, href } = Astro.props;
+const { title, summary, status, statusLabel, date, dateLabel, href } =
+  Astro.props;
 const tone =
-  status === "experimental"
-    ? "experimental"
-    : status === "paused" || status === "archived"
-      ? "neutral"
-      : "accent";
+  status === "paused" || status === "archived" ? "neutral" : "accent";
+const iso = date.toISOString().slice(0, 10);
 ---
 
 <article class="card">
   <div class="meta">
     <StatusBadge tone={tone}>{statusLabel}</StatusBadge>
-    <time class="year" datetime={String(year)}>
-      {year}
-    </time>
+    <time datetime={iso}>{dateLabel}</time>
   </div>
   <h3>{href ? <a href={href}>{title}</a> : title}</h3>
   <p>{summary}</p>
@@ -49,7 +46,7 @@ const tone =
     gap: 8px;
   }
 
-  .year {
+  time {
     color: var(--muted-strong);
     font-family: var(--font-mono);
     font-size: 12px;
@@ -58,6 +55,7 @@ const tone =
 
   h3 {
     margin: 12px 0 0;
+    overflow-wrap: anywhere;
     font-size: 20px;
     font-weight: 500;
     line-height: 28px;

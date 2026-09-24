@@ -5,12 +5,14 @@ import Icon from "./Icon.astro";
 
 interface Props {
   locale: Locale;
+  languageHref?: string;
 }
 
-const { locale } = Astro.props;
+const { locale, languageHref } = Astro.props;
 const t = useTranslations(locale);
 const home = getRelativeLocaleUrl(locale, "/");
-const languageHref = getRelativeLocaleUrl(otherLocale(locale), "/");
+const switchHref =
+  languageHref ?? getRelativeLocaleUrl(otherLocale(locale), "/");
 const items = [
   { href: getRelativeLocaleUrl(locale, "/works"), label: t.works },
   { href: getRelativeLocaleUrl(locale, "/notes"), label: t.notes },
@@ -52,7 +54,7 @@ const items = [
       {items.map((item) => (
         <a href={item.href}>{item.label}</a>
       ))}
-      <a class="language" href={languageHref}>
+      <a class="language" href={switchHref}>
         {t.switchTo}
       </a>
     </nav>

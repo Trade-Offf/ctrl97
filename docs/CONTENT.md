@@ -29,7 +29,7 @@ src/content/pages/en/about.mdx
 
 文件名是 slug，使用小写英文和连字符，例如 `field-notes.mdx`。两种语言的同一件作品或同一篇文章使用同一个文件名。这个文件名是翻译配对键。
 
-阶段 3 才创建作品和笔记文件。阶段 4 才创建 Now 和 About。阶段 0 不放示例条目。
+阶段 4 才创建 Now 和 About。当前作品和笔记里只有标明「示例内容 / 待替换 / 不代表真实数据」的占位条目。
 
 ## Works
 
@@ -37,23 +37,27 @@ src/content/pages/en/about.mdx
 
 ```ts
 const work = z.object({
-  title: z.string(),
-  summary: z.string().max(160),
-  status: z.enum([
-    "shipped",
-    "building",
-    "experimental",
-    "paused",
-    "archived",
-  ]),
-  role: z.string(),
-  year: z.number().int().gte(1997).lte(2100),
-  url: z.string().url().optional(),
-  repo: z.string().url().optional(),
-  cover: z.string().optional(),
-  tags: z.array(z.string()).default([]),
+  title: z.string().min(1),
+  description: z.string().min(1),
+  publishedAt: z.coerce.date(),
+  status: z.enum(["building", "shipped", "paused", "archived"]),
   featured: z.boolean().default(false),
-  order: z.number().int().optional(),
+  role: z.string().min(1).optional(),
+  stack: z.array(z.string().min(1)).default([]),
+  cover: z.string().min(1).optional(),
+  website: z.string().url().optional(),
+  repository: z.string().url().optional(),
+  note: z.string().min(1).optional(),
+  metrics: z
+    .array(
+      z.object({
+        label: z.string().min(1),
+        value: z.string().min(1),
+        source: z.string().url(),
+        asOf: z.coerce.date(),
+      }),
+    )
+    .optional(),
   draft: z.boolean().default(false),
 });
 ```
@@ -61,31 +65,33 @@ const work = z.object({
 | 字段 | 含义 |
 | --- | --- |
 | `title` | 产品的真实名称 |
-| `summary` | 一句话说明它是什么，最长 160 字 |
-| `status` | 当前状态，使用下面的固定词汇 |
-| `role` | Rico 实际担任的角色 |
-| `year` | 公开或开始的年份，取真实年份 |
-| `url` | 可访问的产品地址。没有上线地址就省略 |
-| `repo` | 可公开的代码仓库。私有仓库不写 |
-| `cover` | 真实界面图的路径。没有就省略 |
-| `tags` | 少量分类词 |
+| `description` | 列表和 SEO 使用的说明 |
+| `publishedAt` | 公开或开始记录的日期 |
+| `status` | 当前状态，只用下面的固定词汇 |
 | `featured` | 是否出现在首页精选。默认否 |
-| `order` | 首页精选的人工排序，数字小的在前 |
-| `draft` | 草稿不进入生产构建 |
+| `role` | Rico 实际担任的角色。没有就省略 |
+| `stack` | 实际使用的技术。没有就省略 |
+| `cover` | 真实界面图的路径。没有就省略 |
+| `website` | 可访问的产品地址。没有就省略 |
+| `repository` | 可公开的代码仓库。私有仓库不写 |
+| `note` | 一句补充事实。没有就省略 |
+| `metrics` | 可选。每一项必须同时有来源 URL 和日期。没有来源就不能写 |
+| `draft` | 草稿不进入列表、RSS 和生产构建 |
 
 状态词汇：
 
 | 值 | 中文 | 英文 |
 | --- | --- | --- |
-| `shipped` | 已上线 | Shipped |
 | `building` | 构建中 | Building |
-| `experimental` | 试验 | Experimental |
+| `shipped` | 已上线 | Shipped |
 | `paused` | 暂停 | Paused |
 | `archived` | 归档 | Archived |
 
-正文用 MDX 写这件作品的事实：它做什么、Rico 做了哪一部分、现在的状态。不写用户数、收入、下载量和星标。schema 不设这些字段。
+正文用 MDX。只写可核实的事实。没有来源的用户数、收入、下载量和客户不写。首页不展示 `metrics`。
 
-首页只取 `featured: true` 且非草稿的作品，按 `order` 升序，最多 3 件。没有精选时显示空状态。有作品但没有精选时，空状态可以链到作品列表。
+列表按状态分组，顺序是 building、shipped、paused、archived。空组不显示。组内按 `publishedAt` 倒序。
+
+首页只取 `featured: true` 且非草稿的作品，按 `publishedAt` 倒序，最多 3 件。没有精选时显示空状态。
 
 ## Notes
 
@@ -93,11 +99,14 @@ const work = z.object({
 
 ```ts
 const note = z.object({
-  title: z.string(),
-  description: z.string().max(200),
+  title: z.string().min(1),
+  description: z.string().min(1),
   publishedAt: z.coerce.date(),
   updatedAt: z.coerce.date().optional(),
-  tags: z.array(z.string()).default([]),
+  category: z.enum(["enter", "undo", "save", "find"]),
+  tags: z.array(z.string().min(1)).default([]),
+  cover: z.string().min(1).optional(),
+  featured: z.boolean().default(false),
   draft: z.boolean().default(false),
 });
 ```
@@ -105,13 +114,27 @@ const note = z.object({
 | 字段 | 含义 |
 | --- | --- |
 | `title` | 文章标题 |
-| `description` | 列表和 SEO 使用的摘要，最长 200 字 |
+| `description` | 列表和 SEO 使用的摘要 |
 | `publishedAt` | 真实发布日期 |
-| `updatedAt` | 有实质修改时才写 |
+| `updatedAt` | 有实质修改时才写，并在详情页显示 |
+| `category` | 栏目，只用下面的固定词汇 |
 | `tags` | 少量分类词 |
-| `draft` | 草稿不进入生产构建 |
+| `cover` | 真实配图路径。没有就省略 |
+| `featured` | 是否标记为精选。默认否。首页最近笔记不按这个字段过滤 |
+| `draft` | 草稿不进入列表、RSS 和生产构建 |
 
-列表取非草稿，按 `publishedAt` 倒序。首页最近笔记最多 3 篇。没有笔记时显示空状态。
+栏目：
+
+| 值 | 标记 | 含义 |
+| --- | --- | --- |
+| `enter` | Ctrl+Enter | 产品发布与 Ship Log |
+| `undo` | Ctrl+Z | 失败记录与复盘 |
+| `save` | Ctrl+S | 值得保存的方法 |
+| `find` | Ctrl+F | 需求研究与探索 |
+
+列表取非草稿，按栏目分组，组内按 `publishedAt` 倒序。空组不显示。首页最近笔记取非草稿，按 `publishedAt` 倒序，最多 3 篇。没有笔记时显示空状态。
+
+详情页计算阅读时间，生成二级和三级标题目录，并用 Shiki 高亮代码。同时显示发布日期；有 `updatedAt` 时再显示更新时间。
 
 笔记不是作品更新日志。产品状态变化写在对应的 Work 里。
 
@@ -168,7 +191,7 @@ Now 的正文是当前快照。可以按「在做」「在读」「在用」组�
 - 客户标志、推荐人姓名
 - 未提供的城市、雇主、学校、邮箱和社交账号
 
-Rico 日后若要公开一个数字，写在对应正文里，并同时写明来源和日期。不为此修改 schema，也不在首页做数字展示。
+Rico 日后若要公开一个数字，写成作品的 `metrics` 项，并同时写明 `source` 和 `asOf`。没有来源的数字不能进入内容。首页不做数字展示。
 
 ## 待人工补充
 

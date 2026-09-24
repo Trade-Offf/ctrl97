@@ -1,0 +1,73 @@
+---
+import { getRelativeLocaleUrl } from "astro:i18n";
+import { formatDate, useTranslations, type Locale } from "../i18n/ui";
+import { entrySlug, getNotes } from "../lib/content";
+import { noteCategoryOrder } from "../lib/taxonomy";
+import BaseLayout from "../layouts/BaseLayout.astro";
+import EmptyState from "./EmptyState.astro";
+import NoteItem from "./NoteItem.astro";
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const t = useTranslations(locale);
+const notes = await getNotes(locale);
+const groups = noteCategoryOrder
+  .map((category) => ({
+    category,
+    items: notes.filter((note) => note.data.category === category),
+  }))
+  .filter((group) => group.items.length > 0);
+---
+
+<BaseLayout
+  locale={locale}
+  title={`${t.notes} — Ctrl97`}
+  description={t.notesLead}
+  alternates={{
+    zh: getRelativeLocaleUrl("zh", "/notes"),
+    en: getRelativeLocaleUrl("en", "/notes"),
+  }}
+>
+  <div class="page">
+    <h1>{t.notes}</h1>
+    <p class="lead">{t.notesLead}</p>
+    {groups.length === 0 ? (
+      <div class="empty-wrap">
+        <EmptyState message={t.emptyNotes} />
+      </div>
+    ) : (
+      groups.map((group) => (
+        <section class="group">
+          <h2>{t.categoryLabel[group.category]}</h2>
+          <p class="hint">{t.categoryHint[group.category]}</p>
+          <div class="list">
+            {group.items.map((note) => (
+              <NoteItem
+                title={note.data.title}
+                href={getRelativeLocaleUrl(
+                  locale,
+                  `/notes/${entrySlug(note.id)}`,
+                )}
+                publishedAt={note.data.publishedAt.toISOString()}
+                dateLabel={formatDate(locale, note.data.publishedAt)}
+              />
+            ))}
+          </div>
+        </section>
+      ))
+    )}
+  </div>
+</BaseLayout>
+
+<style>
+  .list {
+    margin-top: 8px;
+  }
+
+  .empty-wrap {
+    margin-top: 32px;
+  }
+</style>

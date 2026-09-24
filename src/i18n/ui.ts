@@ -26,17 +26,41 @@ const dictionary = {
     notesTitle: "最近笔记",
     emptyWorksHome: "新的产品实验正在构建中。",
     emptyNotesHome: "第一篇构建笔记正在路上。",
+    emptyWorks: "还没有公开作品。",
+    emptyNotes: "还没有公开笔记。",
+    worksLead: "这里只放真实做过的产品。标成示例的条目会换掉。",
+    notesLead: "笔记按栏目分组。标成示例的文章会换掉。",
+    published: "发布于",
+    updated: "更新于",
+    toc: "目录",
+    website: "网站",
+    repository: "代码",
+    role: "角色",
+    stack: "技术",
+    aside: "备注",
+    record: "记录",
     tagline: "Build, ship, and stay chill.",
     github: "GitHub",
     rss: "RSS",
     name: "Ctrl97",
     person: "Rico",
     statusLabel: {
-      shipped: "已上线",
       building: "构建中",
-      experimental: "试验",
+      shipped: "已上线",
       paused: "暂停",
       archived: "归档",
+    },
+    categoryLabel: {
+      enter: "Ctrl+Enter",
+      undo: "Ctrl+Z",
+      save: "Ctrl+S",
+      find: "Ctrl+F",
+    },
+    categoryHint: {
+      enter: "产品发布与 Ship Log",
+      undo: "失败记录与复盘",
+      save: "值得保存的方法",
+      find: "需求研究与探索",
     },
   },
   en: {
@@ -63,17 +87,43 @@ const dictionary = {
     notesTitle: "Latest notes",
     emptyWorksHome: "New product experiments are being built.",
     emptyNotesHome: "The first build note is on its way.",
+    emptyWorks: "No public works yet.",
+    emptyNotes: "No public notes yet.",
+    worksLead:
+      "Only real products belong here. Entries marked as samples will be replaced.",
+    notesLead:
+      "Notes are grouped by section. Entries marked as samples will be replaced.",
+    published: "Published",
+    updated: "Updated",
+    toc: "Contents",
+    website: "Website",
+    repository: "Code",
+    role: "Role",
+    stack: "Stack",
+    aside: "Note",
+    record: "Record",
     tagline: "Build, ship, and stay chill.",
     github: "GitHub",
     rss: "RSS",
     name: "Ctrl97",
     person: "Rico",
     statusLabel: {
-      shipped: "Shipped",
       building: "Building",
-      experimental: "Experimental",
+      shipped: "Shipped",
       paused: "Paused",
       archived: "Archived",
+    },
+    categoryLabel: {
+      enter: "Ctrl+Enter",
+      undo: "Ctrl+Z",
+      save: "Ctrl+S",
+      find: "Ctrl+F",
+    },
+    categoryHint: {
+      enter: "Product releases and ship logs",
+      undo: "Failures and retrospectives",
+      save: "Methods worth keeping",
+      find: "Research and exploration",
     },
   },
 } as const;
@@ -86,4 +136,16 @@ export function useTranslations(locale: Locale): Messages {
 
 export function otherLocale(locale: Locale): Locale {
   return locale === "zh" ? "en" : "zh";
+}
+
+export function readingLabel(locale: Locale, minutes: number): string {
+  return locale === "zh" ? `约 ${minutes} 分钟` : `${minutes} min`;
+}
+
+export function formatDate(locale: Locale, date: Date): string {
+  return new Intl.DateTimeFormat(locale === "zh" ? "zh-Hans" : "en", {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+  }).format(date);
 }

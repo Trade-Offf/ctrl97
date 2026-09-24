@@ -1,9 +1,8 @@
 ---
 import { getRelativeLocaleUrl } from "astro:i18n";
-import { latestNotes } from "../data/notes";
+import { getNotes, getWorks, entrySlug } from "../lib/content";
 import { getNowLanes, type NowLaneId } from "../data/now";
-import { featuredWorks } from "../data/works";
-import { useTranslations, type Locale } from "../i18n/ui";
+import { formatDate, useTranslations, type Locale } from "../i18n/ui";
 import Button from "./Button.astro";
 import EmptyState from "./EmptyState.astro";
 import NoteItem from "./NoteItem.astro";
@@ -18,6 +17,10 @@ interface Props {
 const { locale } = Astro.props;
 const t = useTranslations(locale);
 const lanes = getNowLanes(locale);
+const featuredWorks = (await getWorks(locale))
+  .filter((work) => work.data.featured)
+  .slice(0, 3);
+const latestNotes = (await getNotes(locale)).slice(0, 3);
 const toneForLane: Record<NowLaneId, "accent" | "neutral"> = {
   building: "accent",
   shipping: "accent",
@@ -62,12 +65,16 @@ const toneForLane: Record<NowLaneId, "accent" | "neutral"> = {
         {featuredWorks.slice(0, 3).map((work) => (
           <li>
             <ProjectCard
-              title={work.title}
-              summary={work.summary}
-              status={work.status}
-              statusLabel={t.statusLabel[work.status]}
-              year={work.year}
-              href={work.href}
+              title={work.data.title}
+              summary={work.data.description}
+              status={work.data.status}
+              statusLabel={t.statusLabel[work.data.status]}
+              date={work.data.publishedAt}
+              dateLabel={formatDate(locale, work.data.publishedAt)}
+              href={getRelativeLocaleUrl(
+                locale,
+                `/works/${entrySlug(work.id)}`,
+              )}
             />
           </li>
         ))}
@@ -83,10 +90,11 @@ const toneForLane: Record<NowLaneId, "accent" | "neutral"> = {
       <div class="notes">
         {latestNotes.slice(0, 3).map((note) => (
           <NoteItem
-            title={note.title}
-            href={note.href}
-            publishedAt={note.publishedAt}
-            locale={locale}
+            title={note.data.title}
+            href={getRelativeLocaleUrl(locale, `/notes/${entrySlug(note.id)}`)}
+            publishedAt={note.data.publishedAt.toISOString()}
+            dateLabel={formatDate(locale, note.data.publishedAt)}
+            kicker={t.categoryLabel[note.data.category]}
           />
         ))}
       </div>
