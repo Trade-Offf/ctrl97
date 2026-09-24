@@ -32,6 +32,13 @@ const dictionary = {
     notesLead: "笔记按栏目分组。标成示例的文章会换掉。",
     published: "发布于",
     updated: "更新于",
+    nowLead: "一份手写快照。日期只在改这些句子时一起改。",
+    aboutLead: "这里只写已经确认的事实。",
+    notFoundTitle: "这一步好像走错了。",
+    notFound: "这个地址没有页面。",
+    backHome: "返回首页",
+    back: "返回上一页",
+    undoHint: "表示退回一步。这个按钮只在本页使用，不接管快捷键。",
     toc: "目录",
     website: "网站",
     repository: "代码",
@@ -95,6 +102,15 @@ const dictionary = {
       "Notes are grouped by section. Entries marked as samples will be replaced.",
     published: "Published",
     updated: "Updated",
+    nowLead:
+      "A handwritten snapshot. The date changes only when these lines change.",
+    aboutLead: "Only confirmed facts go here.",
+    notFoundTitle: "This step seems to be the wrong one.",
+    notFound: "There is no page at this address.",
+    backHome: "Return home",
+    back: "Back to the previous page",
+    undoHint:
+      "Step back. This button stays on this page and does not take over the shortcut.",
     toc: "Contents",
     website: "Website",
     repository: "Code",
@@ -147,5 +163,6 @@ export function formatDate(locale: Locale, date: Date): string {
     year: "numeric",
     month: "short",
     day: "numeric",
+    timeZone: "Asia/Shanghai",
   }).format(date);
 }

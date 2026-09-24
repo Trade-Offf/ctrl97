@@ -8,6 +8,17 @@ export type NowLane = {
   text: string;
 };
 
+/** 手写快照日期。改文案时一起改，不要换成构建时间。 */
+export const nowUpdated = "2026-09-24";
+
+if (!/^\d{4}-\d{2}-\d{2}$/.test(nowUpdated)) {
+  throw new Error("Now updated date must be YYYY-MM-DD");
+}
+
+export function nowUpdatedDate(): Date {
+  return new Date(`${nowUpdated}T00:00:00+08:00`);
+}
+
 const nowLanes = {
   zh: [
     { id: "building", label: "Building", text: "待补充" },

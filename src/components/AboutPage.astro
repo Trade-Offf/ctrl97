@@ -1,0 +1,69 @@
+---
+import { getRelativeLocaleUrl } from "astro:i18n";
+import { getAboutSections } from "../data/about";
+import { useTranslations, type Locale } from "../i18n/ui";
+import BaseLayout from "../layouts/BaseLayout.astro";
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const t = useTranslations(locale);
+const sections = getAboutSections(locale);
+const nowHref = getRelativeLocaleUrl(locale, "/now");
+---
+
+<BaseLayout
+  locale={locale}
+  title={`${t.about} — Ctrl97`}
+  description={t.aboutLead}
+  alternates={{
+    zh: getRelativeLocaleUrl("zh", "/about"),
+    en: getRelativeLocaleUrl("en", "/about"),
+  }}
+>
+  <article class="page copy">
+    <h1>{t.about}</h1>
+    <p class="lead">{t.aboutLead}</p>
+    {sections.map((section) => (
+      <section>
+        <h2>{section.title}</h2>
+        {section.paragraphs.map((paragraph) => {
+          if (!paragraph.includes("{now}")) {
+            return <p>{paragraph}</p>;
+          }
+          const [before, after] = paragraph.split("{now}");
+          return (
+            <p>
+              {before}
+              <a href={nowHref}>{locale === "zh" ? "现在" : "Now"}</a>
+              {after}
+            </p>
+          );
+        })}
+      </section>
+    ))}
+  </article>
+</BaseLayout>
+
+<style>
+  .copy {
+    max-width: 40rem;
+  }
+
+  h2 {
+    margin: 48px 0 0;
+    font-size: 28px;
+    font-weight: 500;
+    line-height: 36px;
+  }
+
+  p {
+    margin: 16px 0 0;
+  }
+
+  a {
+    color: var(--accent-text);
+  }
+</style>

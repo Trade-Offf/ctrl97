@@ -7,7 +7,7 @@
 网站从第一天起提供简体中文和英文。
 
 - 界面文案两种语言同时存在，放在类型化词典里，不写进内容文件。
-- 作品、笔记、Now 和 About 按语言分目录。
+- 作品和笔记按语言分目录。Now 与 About 放在数据文件里，两种语言都要有。
 - 语言取自目录名 `zh` 或 `en`，不在 frontmatter 里再写 `locale`。
 - 缺少翻译时，不显示另一种语言的正文，也不机器翻译后充数。
 - 语言切换：同一 slug 的译文存在时链到译文；不存在时链到该语言的栏目首页。
@@ -21,15 +21,13 @@ src/content/works/zh/*.mdx
 src/content/works/en/*.mdx
 src/content/notes/zh/*.mdx
 src/content/notes/en/*.mdx
-src/content/pages/zh/now.mdx
-src/content/pages/zh/about.mdx
-src/content/pages/en/now.mdx
-src/content/pages/en/about.mdx
+src/data/now.ts
+src/data/about.ts
 ```
 
 文件名是 slug，使用小写英文和连字符，例如 `field-notes.mdx`。两种语言的同一件作品或同一篇文章使用同一个文件名。这个文件名是翻译配对键。
 
-阶段 4 才创建 Now 和 About。当前作品和笔记里只有标明「示例内容 / 待替换 / 不代表真实数据」的占位条目。
+作品和笔记里目前只有标明「示例内容 / 待替换 / 不代表真实数据」的占位条目。Now 与 About 不放进内容集合。
 
 ## Works
 
@@ -138,21 +136,11 @@ const note = z.object({
 
 笔记不是作品更新日志。产品状态变化写在对应的 Work 里。
 
-## Now 与 About
+阶段 4 的 Now 与 About 使用数据文件，不放进作品或笔记集合。
 
-二者属于 `pages` 集合，不进入作品流或笔记流。
+Now 的路径是 `src/data/now.ts`。四栏 id 固定为 `building`、`shipping`、`writing`、`learning`。`nowUpdated` 必须是 `YYYY-MM-DD`。缺了或格式不对，导入该文件时构建失败。这个日期是手写的，不取构建时钟。
 
-```ts
-const page = z.object({
-  title: z.string(),
-  description: z.string().max(200),
-  updated: z.coerce.date().optional(),
-});
-```
-
-`now` 必须有 `updated`，并在页面上显示。阶段 4 实现时校验：id 以 `/now` 结尾的条目缺少 `updated` 则构建失败。`about` 的 `updated` 可省略。
-
-Now 的正文是当前快照。可以按「在做」「在读」「在用」组织，但每一句都要是当时的事实。About 的正文只包含可核实介绍。
+About 的路径是 `src/data/about.ts`。五个栏目是：我是谁、为什么叫 Ctrl97、我正在做什么、工作与技能、联系方式。正文只用 [PRODUCT.md](PRODUCT.md) 里已确认的事实。联系方式还没有公开邮箱或社交账号时，写明还待补充，不填猜测的地址。
 
 ## 界面词典
 
@@ -197,12 +185,11 @@ Rico 日后若要公开一个数字，写成作品的 `metrics` 项，并同时�
 
 下面各项确认前，相关位置保持空状态或只显示已确认事实：
 
-- About 的中文简介和英文简介
 - 可公开的邮箱与社交链接
 - 头像或照片
 - 每件作品的中英事实：名称、摘要、角色、年份、状态、链接
 - 笔记正文
-- Now 的当前事实和更新日期
+- Now 四栏里的具体事实。日期已有手写占位，事实仍是「待补充」
 - 是否把英文改成默认语言
 
 已确认、现在就可以使用的事实见 [PRODUCT.md](PRODUCT.md) 的品牌一节。

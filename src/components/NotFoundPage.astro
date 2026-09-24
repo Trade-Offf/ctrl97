@@ -1,0 +1,120 @@
+---
+import { getRelativeLocaleUrl } from "astro:i18n";
+import { useTranslations, type Locale } from "../i18n/ui";
+import BaseLayout from "../layouts/BaseLayout.astro";
+import Button from "./Button.astro";
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const t = useTranslations(locale);
+const home = getRelativeLocaleUrl(locale, "/");
+---
+
+<BaseLayout
+  locale={locale}
+  title={`404 — Ctrl97`}
+  description={t.notFoundTitle}
+  alternates={{
+    zh: getRelativeLocaleUrl("zh", "/404"),
+    en: getRelativeLocaleUrl("en", "/404"),
+  }}
+>
+  <div class="page">
+    <h1>{t.notFoundTitle}</h1>
+    <p class="lead">{t.notFound}</p>
+    <div class="actions">
+      <Button href={home}>{t.backHome}</Button>
+      <a class="back" href={home} data-back>
+        {t.back}
+      </a>
+    </div>
+    <p class="undo">
+      <kbd>Ctrl</kbd>
+      <kbd>Z</kbd>
+      <span>{t.undoHint}</span>
+    </p>
+  </div>
+</BaseLayout>
+
+{locale === "zh" && <script is:inline>
+  if (location.pathname === "/en" || location.pathname.startsWith("/en/")) {
+    if (location.pathname !== "/en/404" && location.pathname !== "/en/404/") {
+      location.replace("/en/404/");
+    }
+  }
+</script>}
+
+<script>
+  const link = document.querySelector("[data-back]");
+  if (link instanceof HTMLAnchorElement) {
+    let sameSite = false;
+    try {
+      sameSite =
+        document.referrer !== "" &&
+        new URL(document.referrer).origin === window.location.origin;
+    } catch {
+      sameSite = false;
+    }
+    if (sameSite) {
+      link.addEventListener("click", (event) => {
+        event.preventDefault();
+        window.history.back();
+      });
+    }
+  }
+</script>
+
+<style>
+  h1,
+  .lead,
+  .undo {
+    max-width: 40rem;
+  }
+
+  .actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 24px;
+  }
+
+  .back {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 40px;
+    padding: 0 16px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text);
+    text-decoration: none;
+  }
+
+  .back:hover {
+    border-color: var(--accent-text);
+    text-decoration: none;
+  }
+
+  .undo {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 8px;
+    margin: 32px 0 0;
+    color: var(--muted-strong);
+  }
+
+  kbd {
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: var(--surface);
+    padding: 2px 8px;
+    color: var(--text);
+    font-family: var(--font-mono);
+    font-size: 12px;
+    line-height: 16px;
+  }
+</style>

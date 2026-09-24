@@ -32,8 +32,10 @@ src/
     works/en/
     notes/zh/
     notes/en/
-    pages/zh/
-    pages/en/
+  data/
+    now.ts
+    about.ts
+    site.ts
   i18n/ui.ts
   layouts/BaseLayout.astro
   lib/content.ts
