@@ -1,0 +1,17 @@
+---
+interface Props {
+  message: string;
+}
+
+const { message } = Astro.props;
+---
+
+<p class="empty">{message}</p>
+
+<style>
+  .empty {
+    max-width: 720px;
+    margin: 0;
+    color: var(--muted-strong);
+  }
+</style>

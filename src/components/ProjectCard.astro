@@ -1,0 +1,79 @@
+---
+import type { WorkStatus } from "../data/works";
+import StatusBadge from "./StatusBadge.astro";
+
+interface Props {
+  title: string;
+  summary: string;
+  status: WorkStatus;
+  statusLabel: string;
+  year: number;
+  href?: string;
+}
+
+const { title, summary, status, statusLabel, year, href } = Astro.props;
+const tone =
+  status === "experimental"
+    ? "experimental"
+    : status === "paused" || status === "archived"
+      ? "neutral"
+      : "accent";
+---
+
+<article class="card">
+  <div class="meta">
+    <StatusBadge tone={tone}>{statusLabel}</StatusBadge>
+    <time class="year" datetime={String(year)}>
+      {year}
+    </time>
+  </div>
+  <h3>{href ? <a href={href}>{title}</a> : title}</h3>
+  <p>{summary}</p>
+</article>
+
+<style>
+  .card {
+    min-width: 0;
+    height: 100%;
+    padding: 16px;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    background: var(--surface);
+  }
+
+  .meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+  }
+
+  .year {
+    color: var(--muted-strong);
+    font-family: var(--font-mono);
+    font-size: 12px;
+    line-height: 16px;
+  }
+
+  h3 {
+    margin: 12px 0 0;
+    font-size: 20px;
+    font-weight: 500;
+    line-height: 28px;
+  }
+
+  h3 a {
+    color: var(--text);
+    text-decoration: none;
+  }
+
+  h3 a:hover {
+    text-decoration: underline;
+  }
+
+  p {
+    margin: 8px 0 0;
+    color: var(--muted-strong);
+  }
+</style>

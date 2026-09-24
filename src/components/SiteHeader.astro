@@ -1,0 +1,233 @@
+---
+import { getRelativeLocaleUrl } from "astro:i18n";
+import { otherLocale, useTranslations, type Locale } from "../i18n/ui";
+import Icon from "./Icon.astro";
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const t = useTranslations(locale);
+const home = getRelativeLocaleUrl(locale, "/");
+const languageHref = getRelativeLocaleUrl(otherLocale(locale), "/");
+const items = [
+  { href: getRelativeLocaleUrl(locale, "/works"), label: t.works },
+  { href: getRelativeLocaleUrl(locale, "/notes"), label: t.notes },
+  { href: getRelativeLocaleUrl(locale, "/now"), label: t.now },
+  { href: getRelativeLocaleUrl(locale, "/about"), label: t.about },
+];
+---
+
+<header class="site-header">
+  <div class="shell bar">
+    <a class="wordmark" href={home} aria-label="Ctrl97">
+      CTRL97
+    </a>
+    <input class="nav-toggle" id="nav-toggle" type="checkbox" />
+    <div class="tools">
+      <button
+        class="tool"
+        type="button"
+        aria-disabled="true"
+        aria-label={t.theme}
+      >
+        <Icon name="sun" />
+      </button>
+      <button
+        class="tool command"
+        type="button"
+        aria-disabled="true"
+        aria-label={t.command}
+      >
+        <Icon name="command" />
+        <kbd>Ctrl K</kbd>
+      </button>
+    </div>
+    <label class="tool menu" for="nav-toggle">
+      <span class="sr-only">{t.menu}</span>
+      <Icon name="menu" />
+    </label>
+    <nav class="nav" aria-label={t.navLabel}>
+      {items.map((item) => (
+        <a href={item.href}>{item.label}</a>
+      ))}
+      <a class="language" href={languageHref}>
+        {t.switchTo}
+      </a>
+    </nav>
+  </div>
+</header>
+
+<style>
+  .site-header {
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    border-bottom: 1px solid var(--border);
+    background: var(--background);
+  }
+
+  .bar {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-height: 64px;
+  }
+
+  .wordmark {
+    margin-right: auto;
+    color: var(--text);
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 20px;
+    text-decoration: none;
+  }
+
+  .wordmark:hover {
+    text-decoration: none;
+  }
+
+  .tools {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .tool {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    min-width: 40px;
+    min-height: 40px;
+    padding: 0 8px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: var(--surface);
+    color: var(--text);
+    font: inherit;
+    cursor: default;
+  }
+
+  .menu {
+    cursor: pointer;
+  }
+
+  .nav-toggle {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    padding: 0;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    border: 0;
+  }
+
+  .nav-toggle:focus-visible ~ .menu {
+    outline: 2px solid var(--accent-text);
+    outline-offset: 2px;
+  }
+
+  kbd {
+    display: none;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    line-height: 16px;
+  }
+
+  .nav {
+    display: none;
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 100%;
+    flex-direction: column;
+    gap: 4px;
+    padding: 8px 20px 16px;
+    border-bottom: 1px solid var(--border);
+    background: var(--surface);
+  }
+
+  .nav-toggle:checked ~ .nav {
+    display: flex;
+  }
+
+  .nav a {
+    display: flex;
+    align-items: center;
+    min-height: 40px;
+    color: var(--text);
+    text-decoration: none;
+  }
+
+  .nav a:hover {
+    text-decoration: underline;
+  }
+
+  .nav a.language {
+    color: var(--accent-text);
+  }
+
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    padding: 0;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  @media (min-width: 48rem) {
+    .bar {
+      gap: 16px;
+    }
+
+    .wordmark {
+      order: 1;
+      margin-right: 0;
+    }
+
+    .nav {
+      display: flex;
+      position: static;
+      order: 2;
+      flex-direction: row;
+      align-items: center;
+      gap: 4px;
+      width: max-content;
+      margin-left: auto;
+      padding: 0;
+      border: 0;
+      background: transparent;
+    }
+
+    .tools {
+      order: 3;
+    }
+
+    .menu,
+    .nav-toggle {
+      display: none;
+    }
+
+    .nav a {
+      padding: 0 8px;
+    }
+
+    .nav a.language {
+      margin-left: 8px;
+    }
+  }
+
+  @media (min-width: 64rem) {
+    kbd {
+      display: inline;
+    }
+  }
+</style>

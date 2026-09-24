@@ -1,0 +1,57 @@
+---
+interface Props {
+  href?: string;
+  variant?: "solid" | "quiet";
+}
+
+const { href, variant = "solid" } = Astro.props;
+---
+
+{href ? (
+  <a class:list={["button", variant]} href={href}>
+    <slot />
+  </a>
+) : (
+  <button class:list={["button", variant]} type="button">
+    <slot />
+  </button>
+)}
+
+<style>
+  .button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 40px;
+    padding: 0 16px;
+    border-radius: 8px;
+    font: inherit;
+    font-size: 16px;
+    line-height: 26px;
+    text-decoration: none;
+    transition:
+      background-color 180ms cubic-bezier(0.2, 0, 0, 1),
+      border-color 180ms cubic-bezier(0.2, 0, 0, 1),
+      color 180ms cubic-bezier(0.2, 0, 0, 1);
+  }
+
+  .button:hover {
+    text-decoration: none;
+  }
+
+  .solid {
+    border: 1px solid transparent;
+    background: var(--accent);
+    color: var(--on-accent);
+  }
+
+  .quiet {
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--text);
+  }
+
+  .quiet:hover {
+    border-color: var(--accent-text);
+  }
+</style>

@@ -1,0 +1,81 @@
+---
+import { getRelativeLocaleUrl } from "astro:i18n";
+import { githubUrl } from "../data/site";
+import { useTranslations, type Locale } from "../i18n/ui";
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const t = useTranslations(locale);
+const home = getRelativeLocaleUrl(locale, "/");
+const year = new Date().getFullYear();
+---
+
+<footer class="site-footer">
+  <div class="shell">
+    <ul>
+      <li>
+        <a href={home}>{t.name}</a>
+      </li>
+      <li>{t.person}</li>
+      <li>
+        <a href={githubUrl} rel="noreferrer">
+          {t.github}
+        </a>
+      </li>
+      <li>
+        <span class="rss">{t.rss}</span>
+      </li>
+    </ul>
+    <p class="year">{year}</p>
+    <p class="tagline">{t.tagline}</p>
+  </div>
+</footer>
+
+<style>
+  .site-footer {
+    border-top: 1px solid var(--border);
+    padding: 32px 0 48px;
+  }
+
+  ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 16px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  li {
+    min-height: 24px;
+  }
+
+  a {
+    color: var(--text);
+    text-decoration: none;
+  }
+
+  a:hover {
+    text-decoration: underline;
+  }
+
+  .rss {
+    color: var(--muted-strong);
+  }
+
+  .year {
+    margin: 16px 0 0;
+    color: var(--muted-strong);
+    font-family: var(--font-mono);
+    font-size: 12px;
+    line-height: 16px;
+  }
+
+  .tagline {
+    margin: 8px 0 0;
+    color: var(--text);
+  }
+</style>

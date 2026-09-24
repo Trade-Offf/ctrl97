@@ -1,0 +1,71 @@
+---
+import "@fontsource/ibm-plex-sans/latin-400.css";
+import "@fontsource/ibm-plex-sans/latin-500.css";
+import "@fontsource/ibm-plex-mono/latin-400.css";
+import { getRelativeLocaleUrl } from "astro:i18n";
+import "../styles/global.css";
+import { useTranslations, type Locale } from "../i18n/ui";
+import SiteFooter from "../components/SiteFooter.astro";
+import SiteHeader from "../components/SiteHeader.astro";
+
+interface Props {
+  locale: Locale;
+  title: string;
+  description: string;
+}
+
+const { locale, title, description } = Astro.props;
+const t = useTranslations(locale);
+const htmlLang = locale === "zh" ? "zh-Hans" : "en";
+const canonical = new URL(Astro.url.pathname, Astro.site);
+const zhHref = new URL(getRelativeLocaleUrl("zh", "/"), Astro.site);
+const enHref = new URL(getRelativeLocaleUrl("en", "/"), Astro.site);
+const normalized = Astro.url.pathname.replace(/\/$/, "") || "/";
+const hasAlternate = normalized === "/" || normalized === "/en";
+const ogLocale = locale === "zh" ? "zh_CN" : "en_US";
+---
+
+<!doctype html>
+<html lang={htmlLang}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="generator" content={Astro.generator} />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical.href} />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical.href} />
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content={ogLocale} />
+    {hasAlternate && (
+      <>
+        <link rel="alternate" hreflang="zh-Hans" href={zhHref.href} />
+        <link rel="alternate" hreflang="en" href={enHref.href} />
+        <link rel="alternate" hreflang="x-default" href={zhHref.href} />
+      </>
+    )}
+    <meta
+      name="theme-color"
+      content="#F7F7F5"
+      media="(prefers-color-scheme: light)"
+    />
+    <meta
+      name="theme-color"
+      content="#111110"
+      media="(prefers-color-scheme: dark)"
+    />
+  </head>
+  <body>
+    <a class="skip-link" href="#content">
+      {t.skip}
+    </a>
+    <SiteHeader locale={locale} />
+    <main id="content" class="shell">
+      <slot />
+    </main>
+    <SiteFooter locale={locale} />
+  </body>
+</html>

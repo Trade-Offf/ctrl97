@@ -1,0 +1,173 @@
+---
+import { getRelativeLocaleUrl } from "astro:i18n";
+import { latestNotes } from "../data/notes";
+import { getNowLanes, type NowLaneId } from "../data/now";
+import { featuredWorks } from "../data/works";
+import { useTranslations, type Locale } from "../i18n/ui";
+import Button from "./Button.astro";
+import EmptyState from "./EmptyState.astro";
+import NoteItem from "./NoteItem.astro";
+import ProjectCard from "./ProjectCard.astro";
+import SectionHeader from "./SectionHeader.astro";
+import StatusBadge from "./StatusBadge.astro";
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const t = useTranslations(locale);
+const lanes = getNowLanes(locale);
+const toneForLane: Record<NowLaneId, "accent" | "neutral"> = {
+  building: "accent",
+  shipping: "accent",
+  writing: "neutral",
+  learning: "neutral",
+};
+---
+
+<div class="home">
+  <section class="hero">
+    <p class="eyebrow">{t.eyebrow}</p>
+    <h1>{t.title}</h1>
+    <p class="lede">{t.description}</p>
+    <p class="motto">{t.motto}</p>
+    <StatusBadge tone="accent">{t.status}</StatusBadge>
+    <div class="actions">
+      <Button href={getRelativeLocaleUrl(locale, "/works")}>
+        {t.viewWorks}
+      </Button>
+      <Button href={getRelativeLocaleUrl(locale, "/notes")} variant="quiet">
+        {t.readNotes}
+      </Button>
+    </div>
+  </section>
+
+  <section class="block" aria-labelledby="now-heading">
+    <SectionHeader id="now-heading" title={t.nowTitle} />
+    <ul class="lanes">
+      {lanes.map((lane) => (
+        <li>
+          <StatusBadge tone={toneForLane[lane.id]}>{lane.label}</StatusBadge>
+          <p>{lane.text}</p>
+        </li>
+      ))}
+    </ul>
+  </section>
+
+  <section class="block" aria-labelledby="works-heading">
+    <SectionHeader id="works-heading" title={t.worksTitle} />
+    {featuredWorks.length > 0 ? (
+      <ul class="works">
+        {featuredWorks.slice(0, 3).map((work) => (
+          <li>
+            <ProjectCard
+              title={work.title}
+              summary={work.summary}
+              status={work.status}
+              statusLabel={t.statusLabel[work.status]}
+              year={work.year}
+              href={work.href}
+            />
+          </li>
+        ))}
+      </ul>
+    ) : (
+      <EmptyState message={t.emptyWorksHome} />
+    )}
+  </section>
+
+  <section class="block" aria-labelledby="notes-heading">
+    <SectionHeader id="notes-heading" title={t.notesTitle} />
+    {latestNotes.length > 0 ? (
+      <div class="notes">
+        {latestNotes.slice(0, 3).map((note) => (
+          <NoteItem
+            title={note.title}
+            href={note.href}
+            publishedAt={note.publishedAt}
+            locale={locale}
+          />
+        ))}
+      </div>
+    ) : (
+      <EmptyState message={t.emptyNotesHome} />
+    )}
+  </section>
+</div>
+
+<style>
+  .home {
+    display: flex;
+    flex-direction: column;
+    gap: 64px;
+    padding: 48px 0 64px;
+  }
+
+  .hero {
+    display: flex;
+    max-width: 720px;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+  }
+
+  .eyebrow {
+    margin: 0;
+    color: var(--muted-strong);
+    font-family: var(--font-mono);
+    font-size: 12px;
+    line-height: 16px;
+  }
+
+  h1 {
+    margin: 0;
+    font-size: 40px;
+    font-weight: 500;
+    line-height: 48px;
+  }
+
+  .lede,
+  .motto {
+    margin: 0;
+  }
+
+  .actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    padding-top: 8px;
+  }
+
+  .lanes,
+  .works {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .lanes li {
+    display: grid;
+    grid-template-columns: minmax(7.5rem, max-content) minmax(0, 1fr);
+    gap: 12px 16px;
+    align-items: center;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .lanes p {
+    margin: 0;
+    color: var(--muted-strong);
+  }
+
+  .works {
+    display: grid;
+    gap: 12px;
+  }
+
+  @media (min-width: 48rem) {
+    .works {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+</style>
