@@ -1,1 +1,1 @@
-https://www.ctrl97.com/* https://ctrl97.com/:splat 301
+# Workers 不支持在这个文件里按主机名跳转。www 的 301 写在 worker/index.js。

@@ -29,9 +29,9 @@ Cloudflare 的构建环境把 Node 设为 22。使用 pnpm 10.26，不要改用 
 2. 在仓库根目录执行 `pnpm build`。
 3. 执行 `pnpm dlx wrangler deploy`。
 
-`wrangler.json` 把 `./dist` 当作静态资源，未知路径返回根目录的 `404.html`。中文 404 页里的脚本会把误入的 `/en/...` 地址转到 `/en/404/`。
+`wrangler.json` 把 `./dist` 当作静态资源，未知路径返回根目录的 `404.html`。中文 404 页里的脚本会把误入的 `/en/...` 地址转到 `/en/404/`。`worker/index.js` 只做一件事：`www.ctrl97.com` 以 301 跳到 `https://ctrl97.com`，其余请求交给静态资源。不使用 `@astrojs/cloudflare`，Astro 的 `output` 仍是 `static`。
 
-部署完成后，在 Cloudflare 控制台打开这个 Worker，进入 Settings → Domains & Routes，添加自定义域 `ctrl97.com`。DNS 由 Cloudflare 代理，云朵打开。
+`wrangler.json` 的 `routes` 把 `ctrl97.com` 和 `www.ctrl97.com` 设成这个 Worker 的自定义域。部署时 Cloudflare 会创建对应的 DNS 记录并签发证书。
 
 ## Pages
 
@@ -45,7 +45,7 @@ Cloudflare 的构建环境把 Node 设为 22。使用 pnpm 10.26，不要改用 
 | Node | 22 |
 | 根目录 | 仓库根目录 |
 
-Pages 会读取 `dist/_redirects` 和 `dist/_headers`。Astro 会把 `public/` 里的这两个文件复制进 `dist/`。
+Pages 会读取 `dist/_headers`。Astro 会把 `public/` 里的文件复制进 `dist/`。Workers 静态资源不支持在 `_redirects` 里按主机名跳转，所以这个仓库不再用该文件做 `www` 跳转。如果改用 Pages，需要在控制台另加下面的 Redirect Rule。
 
 ## 域名、HTTPS 与 www
 
@@ -57,13 +57,9 @@ Pages 会读取 `dist/_redirects` 和 `dist/_headers`。Astro 会把 `public/` �
 4. 打开 Always Use HTTPS。
 5. 打开 Automatic HTTPS Rewrites。
 
-`www.ctrl97.com` 永久跳到主域名。`public/_redirects` 写的是：
+`www.ctrl97.com` 永久跳到主域名。Workers 部署由 `worker/index.js` 返回 301，并保留路径和查询字符串。不要用 302。
 
-```text
-https://www.ctrl97.com/* https://ctrl97.com/:splat 301
-```
-
-再在 Cloudflare 加一条 Redirect Rule，作为同一跳转的备份：请求主机名等于 `www.ctrl97.com` 时，301 到 `https://ctrl97.com` 并保留路径和查询字符串。不要用 302。
+不要在 `public/_redirects` 里写 `https://www.ctrl97.com/*`。Workers 会拒绝绝对地址，整次部署失败。
 
 不要把 `www` 设成另一份站点。规范链接、Open Graph 和 sitemap 都使用不带 `www` 的地址。
 
