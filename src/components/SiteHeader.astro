@@ -1,6 +1,7 @@
 ---
 import { getRelativeLocaleUrl } from "astro:i18n";
 import { otherLocale, useTranslations, type Locale } from "../i18n/ui";
+import { buildCommands, serializeCommands } from "../lib/commands";
 import Icon from "./Icon.astro";
 
 interface Props {
@@ -19,6 +20,7 @@ const items = [
   { href: getRelativeLocaleUrl(locale, "/now"), label: t.now },
   { href: getRelativeLocaleUrl(locale, "/about"), label: t.about },
 ];
+const commands = serializeCommands(await buildCommands(locale));
 ---
 
 <header class="site-header">
@@ -30,17 +32,23 @@ const items = [
     <div class="tools">
       <button
         class="tool"
+        id="theme-toggle"
         type="button"
-        aria-disabled="true"
-        aria-label={t.theme}
+        aria-label={t.themeSystem}
+        data-label-system={t.themeSystem}
+        data-label-light={t.themeLight}
+        data-label-dark={t.themeDark}
       >
         <Icon name="sun" />
       </button>
       <button
         class="tool command"
+        id="command-toggle"
         type="button"
-        aria-disabled="true"
-        aria-label={t.command}
+        aria-label={t.commandLabel}
+        aria-haspopup="dialog"
+        aria-expanded="false"
+        aria-controls="command-dialog"
       >
         <Icon name="command" />
         <kbd>Ctrl K</kbd>
@@ -60,6 +68,55 @@ const items = [
     </nav>
   </div>
 </header>
+
+<div
+  class="palette"
+  id="command-dialog"
+  role="dialog"
+  aria-modal="true"
+  aria-labelledby="command-title"
+  hidden
+>
+  <div class="panel">
+    <p id="command-title" class="sr-only">
+      {t.commandLabel}
+    </p>
+    <label class="sr-only" for="command-search">
+      {t.commandPlaceholder}
+    </label>
+    <input
+      id="command-search"
+      type="search"
+      role="combobox"
+      placeholder={t.commandPlaceholder}
+      aria-controls="command-list"
+      aria-autocomplete="list"
+      aria-expanded="true"
+      autocomplete="off"
+      spellcheck="false"
+    />
+    <div
+      id="command-list"
+      role="listbox"
+      tabindex="0"
+      aria-label={t.commandLabel}
+      data-group-go={t.groupGo}
+      data-group-work={t.works}
+      data-group-note={t.notes}
+      data-group-action={t.groupAction}
+      data-empty={t.commandEmpty}
+      data-copied={t.copied}
+      data-copy-failed={t.copyFailed}
+    ></div>
+    <p id="command-live" class="sr-only" aria-live="polite"></p>
+  </div>
+</div>
+<script type="application/json" id="command-index" set:html={commands}></script>
+<script>
+  import { startPalette } from "../scripts/palette";
+
+  startPalette();
+</script>
 
 <style>
   .site-header {
@@ -110,7 +167,14 @@ const items = [
     background: var(--surface);
     color: var(--text);
     font: inherit;
-    cursor: default;
+    cursor: pointer;
+    transition:
+      background-color 180ms cubic-bezier(0.2, 0, 0, 1),
+      border-color 180ms cubic-bezier(0.2, 0, 0, 1);
+  }
+
+  .tool:hover {
+    border-color: var(--accent-text);
   }
 
   .menu {
@@ -231,5 +295,94 @@ const items = [
     kbd {
       display: inline;
     }
+  }
+
+  .palette {
+    position: fixed;
+    z-index: 40;
+    inset: 0;
+    display: grid;
+    align-items: start;
+    justify-content: center;
+    padding: 16px;
+    padding-top: max(16px, 10vh);
+    background: color-mix(in srgb, var(--background) 72%, transparent);
+    opacity: 1;
+    transition: opacity 180ms cubic-bezier(0.2, 0, 0, 1);
+  }
+
+  .palette[hidden] {
+    display: none;
+  }
+
+  .panel {
+    display: flex;
+    width: min(560px, 100%);
+    max-height: min(70dvh, 640px);
+    flex-direction: column;
+    overflow: hidden;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    background: var(--surface);
+  }
+
+  #command-search {
+    width: 100%;
+    border: 0;
+    border-bottom: 1px solid var(--border);
+    border-radius: 0;
+    background: transparent;
+    color: var(--text);
+    padding: 16px;
+    font: inherit;
+    font-size: 16px;
+    line-height: 26px;
+  }
+
+  #command-list {
+    overflow: auto;
+    padding: 8px;
+  }
+</style>
+
+<style is:global>
+  #command-list .group-label {
+    margin: 8px 12px 4px;
+    color: var(--muted-strong);
+    font-family: var(--font-mono);
+    font-size: 12px;
+    line-height: 16px;
+  }
+
+  #command-list .option {
+    display: flex;
+    min-height: 40px;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+    gap: 2px;
+    padding: 8px 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 180ms cubic-bezier(0.2, 0, 0, 1);
+  }
+
+  #command-list .option-label {
+    overflow-wrap: anywhere;
+  }
+
+  #command-list .hint,
+  #command-list .empty {
+    color: var(--muted-strong);
+    font-size: 14px;
+    line-height: 20px;
+  }
+
+  #command-list .option[aria-selected="true"] {
+    background: var(--background);
+  }
+
+  #command-list .empty {
+    margin: 8px 12px 16px;
   }
 </style>
