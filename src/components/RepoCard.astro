@@ -1,0 +1,90 @@
+---
+import type { RepositoryCard } from "../data/repositories";
+
+interface Props {
+  repo: RepositoryCard;
+  starsLabel: string;
+}
+
+const { repo, starsLabel } = Astro.props;
+const facts = [repo.language, repo.year].filter(Boolean).join(" · ");
+const host = repo.website
+  ? new URL(repo.website).host.replace(/^www\./, "")
+  : "";
+---
+
+<a class="card" href={repo.href} rel="noopener noreferrer">
+  <p class="meta">
+    <span>{facts}</span>
+    <span class="stars">
+      {repo.stars} {starsLabel}
+    </span>
+  </p>
+  <p class="name">{repo.name}</p>
+  {repo.description && <p class="summary">{repo.description}</p>}
+  {host && <p class="host">{host}</p>}
+</a>
+
+<style>
+  .card {
+    display: flex;
+    min-width: 0;
+    height: 100%;
+    flex-direction: column;
+    padding: 12px;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    background: var(--surface);
+    color: var(--text);
+    text-decoration: none;
+  }
+
+  .card:hover {
+    border-color: var(--accent-text);
+    text-decoration: none;
+  }
+
+  .meta,
+  .host {
+    margin: 0;
+    color: var(--muted-strong);
+    font-family: var(--font-mono);
+    font-size: 12px;
+    line-height: 16px;
+  }
+
+  .meta {
+    display: flex;
+    gap: 8px;
+    justify-content: space-between;
+  }
+
+  .stars {
+    flex: none;
+    color: var(--text);
+  }
+
+  .name {
+    margin: 8px 0 0;
+    overflow-wrap: anywhere;
+    font-size: 16px;
+    font-weight: 500;
+    line-height: 24px;
+  }
+
+  .summary {
+    display: -webkit-box;
+    margin: 8px 0 0;
+    overflow: hidden;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
+    color: var(--muted-strong);
+    font-size: 14px;
+    line-height: 22px;
+  }
+
+  .host {
+    margin-top: auto;
+    padding-top: 8px;
+  }
+</style>

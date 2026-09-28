@@ -153,3 +153,9 @@ GitHub 卡片使用公开主页上的 Trade-Offf、简介，以及 Alibaba · Ha
 
 已发布的示例笔记撤下。示例作品仍留在作品页，并标明待替换，不再出现在首页精选。首页同时放上掘金和 GitHub 两张卡片。Now 里 Building、Shipping、Writing 改成汪汪简报和这些笔记；Learning 仍是待补充。
 
+## D21 去掉关于页和现在页
+
+关于和现在不再单独成页，导航和命令面板里也不再出现。文章作者地址改回首页。
+
+首页用 2026 年 9 月 28 日从 `https://github.com/Trade-Offf` 记下的公开仓库做卡片，只放当时星标不少于 4 的 8 个：typhoon-bavi-tracker 40、responsiveWebsite 17、NextPPT 15、QuizPort 12、Rax2Taro 10、The-Nth-Me 7、gyroDemo 4、CS-studyAbroad 4。简介用仓库描述；QuizPort 和 The-Nth-Me 的仓库描述是空的，改用各自 README 里的那一句。不把其余 0 星仓库写进来充数。
+

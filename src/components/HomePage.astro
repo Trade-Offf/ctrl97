@@ -1,7 +1,7 @@
 ---
 import { getRelativeLocaleUrl } from "astro:i18n";
-import { getNotes, getWorks, entrySlug } from "../lib/content";
-import { getNowLanes, type NowLaneId } from "../data/now";
+import { repositories } from "../data/repositories";
+import { getNotes, entrySlug } from "../lib/content";
 import { getProfiles } from "../data/profiles";
 import { presence } from "../data/site";
 import { formatDate, useTranslations, type Locale } from "../i18n/ui";
@@ -9,7 +9,7 @@ import Button from "./Button.astro";
 import ProfileCard from "./ProfileCard.astro";
 import EmptyState from "./EmptyState.astro";
 import NoteItem from "./NoteItem.astro";
-import ProjectCard from "./ProjectCard.astro";
+import RepoCard from "./RepoCard.astro";
 import SectionHeader from "./SectionHeader.astro";
 import StatusBadge from "./StatusBadge.astro";
 
@@ -19,18 +19,8 @@ interface Props {
 
 const { locale } = Astro.props;
 const t = useTranslations(locale);
-const lanes = getNowLanes(locale);
 const profiles = getProfiles(locale);
-const featuredWorks = (await getWorks(locale))
-  .filter((work) => work.data.featured)
-  .slice(0, 3);
-const latestNotes = (await getNotes(locale)).slice(0, 3);
-const toneForLane: Record<NowLaneId, "accent" | "neutral"> = {
-  building: "accent",
-  shipping: "accent",
-  writing: "neutral",
-  learning: "neutral",
-};
+const latestNotes = (await getNotes(locale)).slice(0, 6);
 ---
 
 <div class="home">
@@ -59,49 +49,23 @@ const toneForLane: Record<NowLaneId, "accent" | "neutral"> = {
     </div>
   </section>
 
-  <section class="block" aria-labelledby="now-heading">
-    <SectionHeader id="now-heading" title={t.nowTitle} />
-    <ul class="lanes">
-      {lanes.map((lane) => (
+  <section class="block" aria-labelledby="repos-heading">
+    <SectionHeader id="repos-heading" title={t.reposTitle} />
+    <p class="hint">{t.reposLead}</p>
+    <ul class="repos">
+      {repositories.map((repo) => (
         <li>
-          <StatusBadge tone={toneForLane[lane.id]}>{lane.label}</StatusBadge>
-          <p>{lane.text}</p>
+          <RepoCard repo={repo} starsLabel={t.starsLabel} />
         </li>
       ))}
     </ul>
-  </section>
-
-  <section class="block" aria-labelledby="works-heading">
-    <SectionHeader id="works-heading" title={t.worksTitle} />
-    {featuredWorks.length > 0 ? (
-      <ul class="works">
-        {featuredWorks.slice(0, 3).map((work) => (
-          <li>
-            <ProjectCard
-              title={work.data.title}
-              summary={work.data.description}
-              status={work.data.status}
-              statusLabel={t.statusLabel[work.data.status]}
-              date={work.data.publishedAt}
-              dateLabel={formatDate(locale, work.data.publishedAt)}
-              href={getRelativeLocaleUrl(
-                locale,
-                `/works/${entrySlug(work.id)}`,
-              )}
-            />
-          </li>
-        ))}
-      </ul>
-    ) : (
-      <EmptyState message={t.emptyWorksHome} />
-    )}
   </section>
 
   <section class="block" aria-labelledby="notes-heading">
     <SectionHeader id="notes-heading" title={t.notesTitle} />
     {latestNotes.length > 0 ? (
       <div class="notes">
-        {latestNotes.slice(0, 3).map((note) => (
+        {latestNotes.map((note) => (
           <NoteItem
             title={note.data.title}
             href={getRelativeLocaleUrl(locale, `/notes/${entrySlug(note.id)}`)}
@@ -121,8 +85,8 @@ const toneForLane: Record<NowLaneId, "accent" | "neutral"> = {
   .home {
     display: flex;
     flex-direction: column;
-    gap: 64px;
-    padding: 48px 0 64px;
+    gap: 32px;
+    padding: 32px 0 48px;
   }
 
   .hero {
@@ -160,41 +124,32 @@ const toneForLane: Record<NowLaneId, "accent" | "neutral"> = {
     padding-top: 8px;
   }
 
-  .profiles {
-    display: grid;
-    max-width: 40rem;
-    gap: 12px;
+  .hint {
+    margin: 0 0 12px;
+    color: var(--muted-strong);
+    font-size: 14px;
+    line-height: 22px;
   }
 
-  .lanes,
-  .works {
+  .profiles,
+  .repos {
+    display: grid;
+    gap: 12px;
     margin: 0;
     padding: 0;
     list-style: none;
   }
 
-  .lanes li {
+  .notes {
     display: grid;
-    grid-template-columns: minmax(7.5rem, max-content) minmax(0, 1fr);
-    gap: 12px 16px;
-    align-items: center;
-    padding: 12px 0;
-    border-bottom: 1px solid var(--border);
-  }
-
-  .lanes p {
-    margin: 0;
-    color: var(--muted-strong);
-  }
-
-  .works {
-    display: grid;
-    gap: 12px;
+    gap: 0 24px;
   }
 
   @media (min-width: 48rem) {
-    .works {
-      grid-template-columns: repeat(3, minmax(0, 1fr));
+    .profiles,
+    .repos,
+    .notes {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
     }
   }
 </style>

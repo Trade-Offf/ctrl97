@@ -64,10 +64,7 @@ const ogLocale = locale === "zh" ? "zh_CN" : "en_US";
 const alternateOgLocale = locale === "zh" ? "en_US" : "zh_CN";
 const rssPath = locale === "en" ? "/en/rss.xml" : "/rss.xml";
 const rssUrl = new URL(rssPath, Astro.site);
-const authorUrl = new URL(
-  locale === "en" ? "/en/about/" : "/about/",
-  Astro.site,
-);
+const authorUrl = new URL(locale === "en" ? "/en/" : "/", Astro.site);
 const jsonLd = serializeJsonLd([
   websiteJsonLd(),
   ...(includePerson ? [personJsonLd()] : []),

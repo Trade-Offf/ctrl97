@@ -54,22 +54,6 @@ export async function buildCommands(locale: Locale): Promise<CommandItem[]> {
       href: getRelativeLocaleUrl(locale, "/notes"),
       action: "navigate",
     },
-    {
-      id: "now",
-      group: "go",
-      label: t.now,
-      hint: "",
-      href: getRelativeLocaleUrl(locale, "/now"),
-      action: "navigate",
-    },
-    {
-      id: "about",
-      group: "go",
-      label: t.about,
-      hint: "",
-      href: getRelativeLocaleUrl(locale, "/about"),
-      action: "navigate",
-    },
     ...works.map((work) => ({
       id: `work-${entrySlug(work.id)}`,
       group: "work" as const,

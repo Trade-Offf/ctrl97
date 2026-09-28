@@ -21,8 +21,6 @@ src/content/works/zh/*.mdx
 src/content/works/en/*.mdx
 src/content/notes/zh/*.mdx
 src/content/notes/en/*.mdx
-src/data/now.ts
-src/data/about.ts
 ```
 
 文件名是 slug，使用小写英文和连字符，例如 `field-notes.mdx`。两种语言的同一件作品或同一篇文章使用同一个文件名。这个文件名是翻译配对键。
@@ -130,17 +128,13 @@ const note = z.object({
 | `save` | Ctrl+S | 值得保存的方法 |
 | `find` | Ctrl+F | 需求研究与探索 |
 
-列表取非草稿，按栏目分组，组内按 `publishedAt` 倒序。空组不显示。首页最近笔记取非草稿，按 `publishedAt` 倒序，最多 3 篇。没有笔记时显示空状态。
+列表取非草稿，按栏目分组，组内按 `publishedAt` 倒序。空组不显示。首页最近笔记取非草稿，按 `publishedAt` 倒序，最多 6 篇。没有笔记时显示空状态。
 
 详情页计算阅读时间，生成二级和三级标题目录，并用 Shiki 高亮代码。同时显示发布日期；有 `updatedAt` 时再显示更新时间。
 
 笔记不是作品更新日志。产品状态变化写在对应的 Work 里。
 
-阶段 4 的 Now 与 About 使用数据文件，不放进作品或笔记集合。
-
-Now 的路径是 `src/data/now.ts`。四栏 id 固定为 `building`、`shipping`、`writing`、`learning`。`nowUpdated` 必须是 `YYYY-MM-DD`。缺了或格式不对，导入该文件时构建失败。这个日期是手写的，不取构建时钟。
-
-About 的路径是 `src/data/about.ts`。五个栏目是：我是谁、为什么叫 Ctrl97、我正在做什么、工作与技能、联系方式。正文只用 [PRODUCT.md](PRODUCT.md) 里已确认的事实。联系方式还没有公开邮箱或社交账号时，写明还待补充，不填猜测的地址。
+关于页和现在页已删除。公开账号和 GitHub 仓库卡片放在首页，不放进作品或笔记集合。
 
 ## 界面词典
 

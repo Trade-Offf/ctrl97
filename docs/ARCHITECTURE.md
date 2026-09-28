@@ -33,8 +33,8 @@ src/
     notes/zh/
     notes/en/
   data/
-    now.ts
-    about.ts
+    profiles.ts
+    repositories.ts
     site.ts
   i18n/ui.ts
   layouts/BaseLayout.astro
@@ -47,16 +47,12 @@ src/
     works/[slug].astro
     notes/index.astro
     notes/[slug].astro
-    now.astro
-    about.astro
     en/index.astro
     en/404.astro
     en/works/index.astro
     en/works/[slug].astro
     en/notes/index.astro
     en/notes/[slug].astro
-    en/now.astro
-    en/about.astro
   styles/global.css
 public/
 astro.config.ts
@@ -85,8 +81,8 @@ i18n: {
 
 | 语言 | URL | `<html lang>` |
 | --- | --- | --- |
-| 简体中文，默认 | `/`、`/works`、`/notes`、`/now`、`/about` | `zh-Hans` |
-| 英文 | `/en`、`/en/works`、`/en/notes`、`/en/now`、`/en/about` | `en` |
+| 简体中文，默认 | `/`、`/works`、`/notes` | `zh-Hans` |
+| 英文 | `/en`、`/en/works`、`/en/notes` | `en` |
 
 不根据 `Accept-Language` 跳转。访问 `/` 的人看到中文。
 
