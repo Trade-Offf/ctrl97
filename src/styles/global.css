@@ -260,6 +260,13 @@ h3 {
   font-size: 0.9em;
 }
 
+.prose img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  margin-top: 16px;
+}
+
 .prose pre {
   max-width: 100%;
   overflow-x: auto;

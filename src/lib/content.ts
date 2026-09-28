@@ -6,7 +6,7 @@ export type NoteEntry = CollectionEntry<"notes">;
 
 export function entrySlug(id: string): string {
   const name = id.split("/").pop() ?? id;
-  return name.replace(/\.mdx$/, "");
+  return name.replace(/\.(md|mdx)$/, "");
 }
 
 export function entryLocale(id: string): Locale | undefined {

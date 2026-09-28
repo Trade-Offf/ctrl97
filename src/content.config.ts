@@ -32,7 +32,7 @@ const works = defineCollection({
 });
 
 const notes = defineCollection({
-  loader: glob({ base: "./src/content/notes", pattern: "**/*.mdx" }),
+  loader: glob({ base: "./src/content/notes", pattern: "**/*.{md,mdx}" }),
   schema: z.object({
     title: z.string().min(1),
     description: z.string().min(1),
@@ -40,6 +40,7 @@ const notes = defineCollection({
     updatedAt: z.coerce.date().optional(),
     category: z.enum(noteCategoryOrder),
     tags: z.array(z.string().min(1)).default([]),
+    source: z.url().optional(),
     cover: z.string().min(1).optional(),
     featured: z.boolean().default(false),
     draft: z.boolean().default(false),

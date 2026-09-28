@@ -78,6 +78,13 @@ const minutes = readingMinutes(note.body ?? "");
       )}
       <span>{readingLabel(locale, minutes)}</span>
     </p>
+    {note.data.source && (
+      <p class="source">
+        <a href={note.data.source} rel="noopener noreferrer">
+          {t.sourceLabel}
+        </a>
+      </p>
+    )}
     {note.data.cover && (
       <img class="cover" src={note.data.cover} alt={note.data.title} />
     )}
@@ -107,12 +114,17 @@ const minutes = readingMinutes(note.body ?? "");
 </BaseLayout>
 
 <style>
-  .kicker {
+  .kicker,
+  .source {
     margin: 0;
     color: var(--muted-strong);
     font-family: var(--font-mono);
     font-size: 12px;
     line-height: 16px;
+  }
+
+  .source {
+    margin-top: 12px;
   }
 
   .cover {

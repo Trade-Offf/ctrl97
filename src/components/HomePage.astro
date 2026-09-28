@@ -2,9 +2,11 @@
 import { getRelativeLocaleUrl } from "astro:i18n";
 import { getNotes, getWorks, entrySlug } from "../lib/content";
 import { getNowLanes, type NowLaneId } from "../data/now";
+import { getProfiles } from "../data/profiles";
 import { presence } from "../data/site";
 import { formatDate, useTranslations, type Locale } from "../i18n/ui";
 import Button from "./Button.astro";
+import ProfileCard from "./ProfileCard.astro";
 import EmptyState from "./EmptyState.astro";
 import NoteItem from "./NoteItem.astro";
 import ProjectCard from "./ProjectCard.astro";
@@ -18,6 +20,7 @@ interface Props {
 const { locale } = Astro.props;
 const t = useTranslations(locale);
 const lanes = getNowLanes(locale);
+const profiles = getProfiles(locale);
 const featuredWorks = (await getWorks(locale))
   .filter((work) => work.data.featured)
   .slice(0, 3);
@@ -44,6 +47,15 @@ const toneForLane: Record<NowLaneId, "accent" | "neutral"> = {
       <Button href={getRelativeLocaleUrl(locale, "/notes")} variant="quiet">
         {t.readNotes}
       </Button>
+    </div>
+  </section>
+
+  <section class="block" aria-labelledby="profiles-heading">
+    <SectionHeader id="profiles-heading" title={t.profilesTitle} />
+    <div class="profiles">
+      {profiles.map((profile) => (
+        <ProfileCard profile={profile} />
+      ))}
     </div>
   </section>
 
@@ -146,6 +158,12 @@ const toneForLane: Record<NowLaneId, "accent" | "neutral"> = {
     flex-wrap: wrap;
     gap: 12px;
     padding-top: 8px;
+  }
+
+  .profiles {
+    display: grid;
+    max-width: 40rem;
+    gap: 12px;
   }
 
   .lanes,
