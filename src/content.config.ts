@@ -14,15 +14,15 @@ const works = defineCollection({
     role: z.string().min(1).optional(),
     stack: z.array(z.string().min(1)).default([]),
     cover: z.string().min(1).optional(),
-    website: z.string().url().optional(),
-    repository: z.string().url().optional(),
+    website: z.url().optional(),
+    repository: z.url().optional(),
     note: z.string().min(1).optional(),
     metrics: z
       .array(
         z.object({
           label: z.string().min(1),
           value: z.string().min(1),
-          source: z.string().url(),
+          source: z.url(),
           asOf: z.coerce.date(),
         }),
       )

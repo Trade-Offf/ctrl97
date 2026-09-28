@@ -10,6 +10,7 @@ interface Props {
 const { locale } = Astro.props;
 const t = useTranslations(locale);
 const home = getRelativeLocaleUrl(locale, "/");
+const rssHref = locale === "en" ? "/en/rss.xml" : "/rss.xml";
 const year = new Date().getFullYear();
 ---
 
@@ -26,7 +27,7 @@ const year = new Date().getFullYear();
         </a>
       </li>
       <li>
-        <span class="rss">{t.rss}</span>
+        <a href={rssHref}>{t.rss}</a>
       </li>
     </ul>
     <p class="year">{year}</p>
@@ -60,10 +61,6 @@ const year = new Date().getFullYear();
 
   a:hover {
     text-decoration: underline;
-  }
-
-  .rss {
-    color: var(--muted-strong);
   }
 
   .year {

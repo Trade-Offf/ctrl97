@@ -7,6 +7,11 @@ const locale = "en" as const;
 const t = useTranslations(locale);
 ---
 
-<BaseLayout locale={locale} title="Ctrl97" description={t.description}>
+<BaseLayout
+  locale={locale}
+  title="Ctrl97"
+  description={t.description}
+  includePerson
+>
   <HomePage locale={locale} />
 </BaseLayout>

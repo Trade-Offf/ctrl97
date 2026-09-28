@@ -7,6 +7,12 @@ import { getRelativeLocaleUrl } from "astro:i18n";
 import "../styles/global.css";
 import { otherLocale, useTranslations, type Locale } from "../i18n/ui";
 import { themeStorageKey } from "../data/site";
+import {
+  blogPostingJsonLd,
+  personJsonLd,
+  serializeJsonLd,
+  websiteJsonLd,
+} from "../lib/seo";
 import SiteFooter from "../components/SiteFooter.astro";
 import SiteHeader from "../components/SiteHeader.astro";
 
@@ -16,9 +22,25 @@ interface Props {
   description: string;
   languageHref?: string;
   alternates?: { zh: string; en: string };
+  includePerson?: boolean;
+  noindex?: boolean;
+  article?: {
+    headline: string;
+    publishedAt: Date;
+    updatedAt?: Date;
+  };
 }
 
-const { locale, title, description, languageHref, alternates } = Astro.props;
+const {
+  locale,
+  title,
+  description,
+  languageHref,
+  alternates,
+  includePerson = false,
+  noindex = false,
+  article,
+} = Astro.props;
 const t = useTranslations(locale);
 const htmlLang = locale === "zh" ? "zh-Hans" : "en";
 const canonical = new URL(Astro.url.pathname, Astro.site);
@@ -39,6 +61,29 @@ const alternateLinks = alternates
     }
   : homeAlternates;
 const ogLocale = locale === "zh" ? "zh_CN" : "en_US";
+const alternateOgLocale = locale === "zh" ? "en_US" : "zh_CN";
+const rssPath = locale === "en" ? "/en/rss.xml" : "/rss.xml";
+const rssUrl = new URL(rssPath, Astro.site);
+const authorUrl = new URL(
+  locale === "en" ? "/en/about/" : "/about/",
+  Astro.site,
+);
+const jsonLd = serializeJsonLd([
+  websiteJsonLd(),
+  ...(includePerson ? [personJsonLd()] : []),
+  ...(article
+    ? [
+        blogPostingJsonLd({
+          locale,
+          headline: article.headline,
+          description,
+          url: canonical.href,
+          publishedAt: article.publishedAt,
+          updatedAt: article.updatedAt,
+        }),
+      ]
+    : []),
+]);
 ---
 
 <!doctype html>
@@ -61,11 +106,41 @@ const ogLocale = locale === "zh" ? "zh_CN" : "en_US";
     <meta name="description" content={description} />
     <link rel="canonical" href={canonical.href} />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <link
+      rel="alternate"
+      type="application/rss+xml"
+      title="Ctrl97"
+      href={rssUrl.href}
+    />
+    {noindex && <meta name="robots" content="noindex" />}
+    <meta property="og:site_name" content="Ctrl97" />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:url" content={canonical.href} />
-    <meta property="og:type" content="website" />
+    <meta property="og:type" content={article ? "article" : "website"} />
     <meta property="og:locale" content={ogLocale} />
+    {alternateLinks && (
+      <meta property="og:locale:alternate" content={alternateOgLocale} />
+    )}
+    {article && (
+      <>
+        <meta
+          property="article:published_time"
+          content={article.publishedAt.toISOString()}
+        />
+        {article.updatedAt && (
+          <meta
+            property="article:modified_time"
+            content={article.updatedAt.toISOString()}
+          />
+        )}
+        <meta property="article:author" content={authorUrl.href} />
+      </>
+    )}
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
     {alternateLinks && (
       <>
         <link rel="alternate" hreflang="zh-Hans" href={alternateLinks.zh} />
@@ -83,6 +158,7 @@ const ogLocale = locale === "zh" ? "zh_CN" : "en_US";
       content="#111110"
       media="(prefers-color-scheme: dark)"
     />
+    <script type="application/ld+json" set:html={jsonLd}></script>
   </head>
   <body>
     <a class="skip-link" href="#content">

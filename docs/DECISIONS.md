@@ -125,3 +125,13 @@ About 从 `src/data/about.ts` 读取，只使用已经确认的称呼、历史�
 
 命令面板只索引当前语言的非草稿作品和笔记。Ctrl 或 Command 加 K 在输入框、文本域、下拉框和可编辑区域里不生效。
 
+## D18 发布用静态资源和真实订阅
+
+阶段 6 继续用静态 `dist/`。发布时的 Astro 版本是 7.3.5。部署入口是 Cloudflare Workers Static Assets，配置在 `wrangler.json`。不安装 `@astrojs/cloudflare`，不把 `output` 改成 `server`。已有 Pages 项目时可以上传同一份 `dist/`。
+
+主域名是 `https://ctrl97.com`。`www.ctrl97.com` 用 301 跳到这个地址。构建不需要环境变量。
+
+sitemap 收录两种语言的已构建页面，排除 404。RSS 分语言输出，只收录非草稿笔记。页脚的 RSS 从此指向这两个地址，不再是占位文字。
+
+结构化数据只写已经确认的事实：`WebSite` 使用品牌名和域名；`Person` 只写 Rico、历史网名 HiSt、职位 AI Product Engineer 和站点地址；笔记使用 `BlogPosting`，字段来自该篇的标题、摘要和日期。不写评分、价格、邮箱、社交账号，也不把仓库属主写成作者身份。没有真实配图时不输出图片字段。
+

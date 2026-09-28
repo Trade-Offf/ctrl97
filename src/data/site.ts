@@ -1,3 +1,5 @@
+export const siteUrl = "https://ctrl97.com";
+
 export const githubUrl = "https://github.com/Trade-Offf/ctrl97";
 
 export const presence = "Building in public";

@@ -43,6 +43,11 @@ const minutes = readingMinutes(note.body ?? "");
   title={`${note.data.title} — Ctrl97`}
   description={note.data.description}
   languageHref={languageHref}
+  article={{
+    headline: note.data.title,
+    publishedAt: note.data.publishedAt,
+    updatedAt: note.data.updatedAt,
+  }}
   alternates={
     translated
       ? {

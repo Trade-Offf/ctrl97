@@ -1,0 +1,18 @@
+{
+  "name": "Ctrl97",
+  "short_name": "Ctrl97",
+  "start_url": "/",
+  "scope": "/",
+  "display": "browser",
+  "lang": "zh-Hans",
+  "background_color": "#F7F7F5",
+  "theme_color": "#F7F7F5",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}

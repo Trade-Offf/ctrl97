@@ -82,7 +82,7 @@ const published = work.data.publishedAt.toISOString().slice(0, 10);
         {work.data.website && (
           <li>
             <span>{t.website}</span>
-            <a href={work.data.website} rel="noreferrer">
+            <a href={work.data.website} rel="noopener noreferrer">
               {work.data.website}
             </a>
           </li>
@@ -90,7 +90,7 @@ const published = work.data.publishedAt.toISOString().slice(0, 10);
         {work.data.repository && (
           <li>
             <span>{t.repository}</span>
-            <a href={work.data.repository} rel="noreferrer">
+            <a href={work.data.repository} rel="noopener noreferrer">
               {work.data.repository}
             </a>
           </li>
@@ -124,7 +124,7 @@ const published = work.data.publishedAt.toISOString().slice(0, 10);
                   {formatDate(locale, metric.asOf)}
                 </time>
                 {" · "}
-                <a href={metric.source} rel="noreferrer">
+                <a href={metric.source} rel="noopener noreferrer">
                   {metric.source}
                 </a>
               </span>
