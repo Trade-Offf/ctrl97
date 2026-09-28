@@ -40,7 +40,7 @@ const aboutSections = {
     {
       id: "contact",
       title: "联系方式",
-      paragraphs: ["公开的邮箱和社交链接还待补充。"],
+      paragraphs: ["公开的邮箱还待补充。社交账号在下面。"],
     },
   ],
   en: [
@@ -78,7 +78,9 @@ const aboutSections = {
     {
       id: "contact",
       title: "Contact",
-      paragraphs: ["A public email and social links are still to be added."],
+      paragraphs: [
+        "A public email is still to be added. The social accounts are below.",
+      ],
     },
   ],
 } as const satisfies Record<Locale, readonly AboutSection[]>;

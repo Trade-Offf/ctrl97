@@ -1,0 +1,134 @@
+---
+import type { ProfileCard as Profile } from "../data/profiles";
+
+interface Props {
+  profile: Profile;
+}
+
+const { profile } = Astro.props;
+---
+
+<a class="card" href={profile.href} rel="noopener noreferrer">
+  <p class="platform">{profile.platform}</p>
+  <p class="name">{profile.name}</p>
+  {profile.role && <p class="role">{profile.role}</p>}
+  <p class="bio">{profile.bio}</p>
+  {profile.fact && <p class="fact">{profile.fact}</p>}
+  {profile.honors && profile.honors.length > 0 && (
+    <ul class="honors">
+      {profile.honors.map((honor) => (
+        <li>{honor}</li>
+      ))}
+    </ul>
+  )}
+  {profile.stats && profile.stats.length > 0 && (
+    <dl class="stats">
+      {profile.stats.map((stat) => (
+        <div>
+          <dt>{stat.label}</dt>
+          <dd>{stat.value}</dd>
+        </div>
+      ))}
+    </dl>
+  )}
+  {profile.asOf && <p class="as-of">{profile.asOf}</p>}
+</a>
+
+<style>
+  .card {
+    display: block;
+    min-width: 0;
+    padding: 16px;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    background: var(--surface);
+    color: var(--text);
+    text-decoration: none;
+  }
+
+  .card:hover {
+    border-color: var(--accent-text);
+    text-decoration: none;
+  }
+
+  .platform,
+  .role,
+  .fact,
+  .as-of {
+    margin: 0;
+    color: var(--muted-strong);
+    font-family: var(--font-mono);
+    font-size: 12px;
+    line-height: 16px;
+  }
+
+  .name {
+    margin: 8px 0 0;
+    font-size: 20px;
+    font-weight: 500;
+    line-height: 28px;
+  }
+
+  .role,
+  .bio,
+  .fact {
+    margin-top: 8px;
+  }
+
+  .bio {
+    margin-bottom: 0;
+    color: var(--text);
+    font-size: 16px;
+    line-height: 26px;
+  }
+
+  .honors {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: 16px 0 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .honors li {
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 4px 8px;
+    color: var(--text);
+    font-size: 14px;
+    line-height: 20px;
+  }
+
+  .stats {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 12px;
+    margin: 16px 0 0;
+  }
+
+  .stats div {
+    display: flex;
+    min-width: 0;
+    flex-direction: column-reverse;
+  }
+
+  dt {
+    margin: 4px 0 0;
+    color: var(--muted-strong);
+    font-size: 12px;
+    line-height: 16px;
+  }
+
+  dd {
+    margin: 0;
+    overflow-wrap: anywhere;
+    font-size: 20px;
+    font-weight: 500;
+    line-height: 28px;
+  }
+
+  .as-of {
+    margin-top: 12px;
+  }
+</style>

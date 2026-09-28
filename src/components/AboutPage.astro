@@ -1,8 +1,10 @@
 ---
 import { getRelativeLocaleUrl } from "astro:i18n";
 import { getAboutSections } from "../data/about";
+import { getProfiles, getPupbrief } from "../data/profiles";
 import { useTranslations, type Locale } from "../i18n/ui";
 import BaseLayout from "../layouts/BaseLayout.astro";
+import ProfileCard from "./ProfileCard.astro";
 
 interface Props {
   locale: Locale;
@@ -11,6 +13,8 @@ interface Props {
 const { locale } = Astro.props;
 const t = useTranslations(locale);
 const sections = getAboutSections(locale);
+const profiles = getProfiles(locale);
+const brief = getPupbrief(locale);
 const nowHref = getRelativeLocaleUrl(locale, "/now");
 ---
 
@@ -43,6 +47,21 @@ const nowHref = getRelativeLocaleUrl(locale, "/now");
             </p>
           );
         })}
+        {section.id === "doing" && (
+          <p>
+            <a href={brief.href} rel="noopener noreferrer">
+              {brief.name}
+            </a>
+            {brief.after}
+          </p>
+        )}
+        {section.id === "contact" && (
+          <div class="profiles">
+            {profiles.map((profile) => (
+              <ProfileCard profile={profile} />
+            ))}
+          </div>
+        )}
       </section>
     ))}
   </article>
@@ -66,5 +85,11 @@ const nowHref = getRelativeLocaleUrl(locale, "/now");
 
   a {
     color: var(--accent-text);
+  }
+
+  .profiles {
+    display: grid;
+    gap: 12px;
+    margin-top: 16px;
   }
 </style>
