@@ -159,3 +159,13 @@ GitHub 卡片使用公开主页上的 Trade-Offf、简介，以及 Alibaba · Ha
 
 首页用 2026 年 9 月 28 日从 `https://github.com/Trade-Offf` 记下的公开仓库做卡片，只放当时星标不少于 4 的 8 个：typhoon-bavi-tracker 40、responsiveWebsite 17、NextPPT 15、QuizPort 12、Rax2Taro 10、The-Nth-Me 7、gyroDemo 4、CS-studyAbroad 4。简介用仓库描述；QuizPort 和 The-Nth-Me 的仓库描述是空的，改用各自 README 里的那一句。不把其余 0 星仓库写进来充数。
 
+## D22 作品页只放星标多于 10 的仓库
+
+首页不再罗列仓库。作品页改为这批仓库里星标大于 10 的四个，按星标从高到低：typhoon-bavi-tracker 40、responsiveWebsite 17、NextPPT 15、QuizPort 12。正好 10 星的 Rax2Taro 不放上去。示例作品改成草稿，不再出现在作品列表里。
+
+笔记列表改成按发布时间从新到旧的一条名单，不再按栏目拆成四组。文章页不再重复摘要，也不再把掘金标签铺成一排。
+
+## D23 GitHub 卡片去掉公司信息
+
+GitHub 卡片不再写 Alibaba · Hangzhou。Rico 已经离职，这行不能再当近况。卡片改用本人提供的横幅，图里的句子是「我们能成为这个时代的维京海盗 / We could be the Vikings of our day.」。Trade-Offf 仍只出现在这张卡片上。
+

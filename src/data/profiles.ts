@@ -12,6 +12,8 @@ export type ProfileCard = {
   bio: string;
   fact?: string;
   href: string;
+  cover?: string;
+  coverAlt?: string;
   honors?: readonly string[];
   stats?: readonly ProfileStat[];
   asOf?: string;
@@ -43,8 +45,9 @@ const profiles = {
       platform: "GitHub",
       name: "Trade-Offf",
       bio: "Ignite the soul, surge the world",
-      fact: "Alibaba · Hangzhou",
       href: "https://github.com/Trade-Offf",
+      cover: "/profiles/vikings.webp",
+      coverAlt: "我们能成为这个时代的维京海盗",
     },
   ],
   en: [
@@ -66,8 +69,9 @@ const profiles = {
       platform: "GitHub",
       name: "Trade-Offf",
       bio: "Ignite the soul, surge the world",
-      fact: "Alibaba · Hangzhou",
       href: "https://github.com/Trade-Offf",
+      cover: "/profiles/vikings.webp",
+      coverAlt: "We could be the Vikings of our day.",
     },
   ],
 } as const satisfies Record<Locale, readonly ProfileCard[]>;

@@ -1,6 +1,5 @@
 ---
 import { getRelativeLocaleUrl } from "astro:i18n";
-import { repositories } from "../data/repositories";
 import { getNotes, entrySlug } from "../lib/content";
 import { getProfiles } from "../data/profiles";
 import { presence } from "../data/site";
@@ -9,7 +8,6 @@ import Button from "./Button.astro";
 import ProfileCard from "./ProfileCard.astro";
 import EmptyState from "./EmptyState.astro";
 import NoteItem from "./NoteItem.astro";
-import RepoCard from "./RepoCard.astro";
 import SectionHeader from "./SectionHeader.astro";
 import StatusBadge from "./StatusBadge.astro";
 
@@ -47,18 +45,6 @@ const latestNotes = (await getNotes(locale)).slice(0, 6);
         <ProfileCard profile={profile} />
       ))}
     </div>
-  </section>
-
-  <section class="block" aria-labelledby="repos-heading">
-    <SectionHeader id="repos-heading" title={t.reposTitle} />
-    <p class="hint">{t.reposLead}</p>
-    <ul class="repos">
-      {repositories.map((repo) => (
-        <li>
-          <RepoCard repo={repo} starsLabel={t.starsLabel} />
-        </li>
-      ))}
-    </ul>
   </section>
 
   <section class="block" aria-labelledby="notes-heading">
@@ -124,15 +110,7 @@ const latestNotes = (await getNotes(locale)).slice(0, 6);
     padding-top: 8px;
   }
 
-  .hint {
-    margin: 0 0 12px;
-    color: var(--muted-strong);
-    font-size: 14px;
-    line-height: 22px;
-  }
-
-  .profiles,
-  .repos {
+  .profiles {
     display: grid;
     gap: 12px;
     margin: 0;
@@ -146,8 +124,6 @@ const latestNotes = (await getNotes(locale)).slice(0, 6);
   }
 
   @media (min-width: 48rem) {
-    .profiles,
-    .repos,
     .notes {
       grid-template-columns: repeat(2, minmax(0, 1fr));
     }

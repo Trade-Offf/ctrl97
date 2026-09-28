@@ -8,36 +8,46 @@ interface Props {
 const { profile } = Astro.props;
 ---
 
-<a class="card" href={profile.href} rel="noopener noreferrer">
-  <p class="platform">{profile.platform}</p>
-  <p class="name">{profile.name}</p>
-  {profile.role && <p class="role">{profile.role}</p>}
-  <p class="bio">{profile.bio}</p>
-  {profile.fact && <p class="fact">{profile.fact}</p>}
-  {profile.honors && profile.honors.length > 0 && (
-    <ul class="honors">
-      {profile.honors.map((honor) => (
-        <li>{honor}</li>
-      ))}
-    </ul>
+<a
+  class:list={["card", { "has-cover": Boolean(profile.cover) }]}
+  href={profile.href}
+  rel="noopener noreferrer"
+>
+  {profile.cover && (
+    <img class="cover" src={profile.cover} alt={profile.coverAlt ?? ""} />
   )}
-  {profile.stats && profile.stats.length > 0 && (
-    <dl class="stats">
-      {profile.stats.map((stat) => (
-        <div>
-          <dt>{stat.label}</dt>
-          <dd>{stat.value}</dd>
-        </div>
-      ))}
-    </dl>
-  )}
-  {profile.asOf && <p class="as-of">{profile.asOf}</p>}
+  <div class="body">
+    <p class="platform">{profile.platform}</p>
+    <p class="name">{profile.name}</p>
+    {profile.role && <p class="role">{profile.role}</p>}
+    <p class="bio">{profile.bio}</p>
+    {profile.fact && <p class="fact">{profile.fact}</p>}
+    {profile.honors && profile.honors.length > 0 && (
+      <ul class="honors">
+        {profile.honors.map((honor) => (
+          <li>{honor}</li>
+        ))}
+      </ul>
+    )}
+    {profile.stats && profile.stats.length > 0 && (
+      <dl class="stats">
+        {profile.stats.map((stat) => (
+          <div>
+            <dt>{stat.label}</dt>
+            <dd>{stat.value}</dd>
+          </div>
+        ))}
+      </dl>
+    )}
+    {profile.asOf && <p class="as-of">{profile.asOf}</p>}
+  </div>
 </a>
 
 <style>
   .card {
     display: block;
     min-width: 0;
+    overflow: hidden;
     padding: 16px;
     border: 1px solid var(--border);
     border-radius: 12px;
@@ -49,6 +59,37 @@ const { profile } = Astro.props;
   .card:hover {
     border-color: var(--accent-text);
     text-decoration: none;
+  }
+
+  .has-cover {
+    padding: 0;
+    border-color: #2c2c2a;
+    background: #111110;
+    color: #f1f1ef;
+  }
+
+  .has-cover:hover {
+    border-color: #45c28a;
+  }
+
+  .cover {
+    display: block;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 1024 / 118;
+    object-fit: cover;
+  }
+
+  .has-cover .body {
+    padding: 16px 16px 18px;
+  }
+
+  .has-cover .platform {
+    color: #a3a3a0;
+  }
+
+  .has-cover .bio {
+    color: #f1f1ef;
   }
 
   .platform,

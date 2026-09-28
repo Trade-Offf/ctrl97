@@ -60,7 +60,6 @@ const minutes = readingMinutes(note.body ?? "");
   <article class="page">
     <p class="kicker">{t.categoryLabel[note.data.category]}</p>
     <h1>{note.data.title}</h1>
-    <p class="lead">{note.data.description}</p>
     <p class="meta-row">
       <span>
         {t.published}
@@ -87,13 +86,6 @@ const minutes = readingMinutes(note.body ?? "");
     )}
     {note.data.cover && (
       <img class="cover" src={note.data.cover} alt={note.data.title} />
-    )}
-    {note.data.tags.length > 0 && (
-      <ul class="stack">
-        {note.data.tags.map((tag) => (
-          <li>{tag}</li>
-        ))}
-      </ul>
     )}
     {toc.length > 0 && (
       <nav class="toc" aria-label={t.toc}>
