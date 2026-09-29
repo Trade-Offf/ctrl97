@@ -12,16 +12,18 @@ const openLabel = locale === "zh" ? "打开今日简报" : "Open today's brief";
 ---
 
 <article
-  class="card"
+  class="rail"
   data-embed-url="https://pupbrief.com/api/embed"
   data-locale={locale}
+  aria-busy="true"
 >
-  <span class="slot" aria-hidden="true"></span>
-  <span class="kicker">
-    <span>Pupbrief</span>
-    <span>CTRL97</span>
-  </span>
-  <div class="fallback">
+  <div class="pending" aria-hidden="true">
+    <span></span>
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+  <div class="fallback" hidden>
     <p class="name">{line.name}</p>
     <p class="bio">{line.after.trim()}</p>
   </div>
@@ -41,28 +43,40 @@ const openLabel = locale === "zh" ? "打开今日简报" : "Open today's brief";
   async function loadEdition(card: HTMLElement, url: string) {
     try {
       const response = await fetch(url);
-      if (!response.ok) return;
+      if (!response.ok) {
+        showFallback(card);
+        return;
+      }
       const payload: unknown = await response.json();
-      renderEdition(card, payload);
+      if (!renderEdition(card, payload)) showFallback(card);
     } catch {
-      // 接口不可用时留下原来那句介绍。
+      showFallback(card);
     }
   }
 
-  function renderEdition(card: HTMLElement, payload: unknown) {
-    if (!payload || typeof payload !== "object") return;
+  function showFallback(card: HTMLElement) {
+    const pending = card.querySelector<HTMLElement>(".pending");
+    const fallback = card.querySelector<HTMLElement>(".fallback");
+    if (pending) pending.hidden = true;
+    if (fallback) fallback.hidden = false;
+    card.setAttribute("aria-busy", "false");
+  }
+
+  function renderEdition(card: HTMLElement, payload: unknown): boolean {
+    if (!payload || typeof payload !== "object") return false;
     const record = payload as { date?: unknown; items?: unknown };
-    if (!Array.isArray(record.items)) return;
+    if (!Array.isArray(record.items)) return false;
 
     const items = record.items
       .slice(0, 5)
       .map(readItem)
       .filter((item): item is EditionItem => item !== null);
-    if (items.length === 0) return;
+    if (items.length === 0) return false;
 
     const edition = card.querySelector<HTMLElement>(".edition");
+    const pending = card.querySelector<HTMLElement>(".pending");
     const fallback = card.querySelector<HTMLElement>(".fallback");
-    if (!edition || !fallback) return;
+    if (!edition || !pending || !fallback) return false;
 
     edition.replaceChildren();
     const dateLabel = formatDate(
@@ -105,8 +119,11 @@ const openLabel = locale === "zh" ? "打开今日简报" : "Open today's brief";
       list.append(row);
     });
     edition.append(list);
-    edition.hidden = false;
+    pending.hidden = true;
     fallback.hidden = true;
+    edition.hidden = false;
+    card.setAttribute("aria-busy", "false");
+    return true;
   }
 
   type EditionItem = {
@@ -164,62 +181,69 @@ const openLabel = locale === "zh" ? "打开今日简报" : "Open today's brief";
 </script>
 
 <style>
-  .card {
+  .rail {
     display: flex;
     min-width: 0;
     flex-direction: column;
     align-self: start;
-    padding: 16px 20px 18px;
+    padding: 16px 16px 14px;
     border: 1px solid var(--border);
-    border-radius: 18px;
+    border-radius: 12px;
     background: var(--surface);
     color: var(--text);
   }
 
-  .slot {
-    display: block;
-    width: 58px;
-    height: 10px;
-    margin: 2px auto 14px;
-    border-radius: 999px;
-    background: var(--background);
-    box-shadow: inset 0 0 0 2px var(--border);
-  }
-
-  .kicker {
+  .pending {
     display: flex;
-    justify-content: space-between;
-    gap: 12px;
-    color: var(--accent-text);
-    font-family: var(--font-mono);
-    font-size: 11px;
-    letter-spacing: 0.16em;
-    line-height: 16px;
-    text-transform: uppercase;
+    flex-direction: column;
+    gap: 14px;
+    padding: 4px 0 8px;
   }
 
-  .name {
-    margin: 12px 0 0;
-    font-size: 28px;
-    font-weight: 600;
-    letter-spacing: -0.04em;
-    line-height: 1.15;
+  .pending span {
+    display: block;
+    height: 12px;
+    border-radius: 4px;
+    background: var(--border);
   }
 
-  .bio {
-    margin: 12px 0 0;
-    color: var(--text);
-    font-size: 14px;
-    line-height: 1.7;
+  .pending span:nth-child(1) {
+    width: 38%;
   }
 
+  .pending span:nth-child(2) {
+    width: 92%;
+  }
+
+  .pending span:nth-child(3) {
+    width: 74%;
+  }
+
+  .pending span:nth-child(4) {
+    width: 84%;
+  }
+
+  .pending[hidden],
   .fallback[hidden],
   .edition[hidden] {
     display: none;
   }
 
+  .name {
+    margin: 0;
+    font-size: 20px;
+    font-weight: 500;
+    line-height: 28px;
+  }
+
+  .bio {
+    margin: 8px 0 0;
+    font-size: 16px;
+    line-height: 26px;
+  }
+
   .edition :global(.date) {
-    margin: 12px 0 0;
+    margin: 0;
     color: var(--muted-strong);
     font-family: var(--font-mono);
     font-size: 12px;
@@ -229,8 +253,7 @@ const openLabel = locale === "zh" ? "打开今日简报" : "Open today's brief";
   .edition :global(.items) {
     display: flex;
     flex-direction: column;
-    gap: 0;
-    margin: 8px 0 0;
+    margin: 4px 0 0;
     padding: 0;
     list-style: none;
   }
@@ -253,33 +276,30 @@ const openLabel = locale === "zh" ? "打开今日简报" : "Open today's brief";
   }
 
   .edition :global(.title) {
-    font-size: 15px;
-    font-weight: 600;
-    letter-spacing: -0.02em;
-    line-height: 1.4;
+    font-size: 16px;
+    font-weight: 500;
+    line-height: 24px;
   }
 
   .edition :global(.note) {
     color: var(--text);
-    font-size: 13px;
+    font-size: 14px;
     font-weight: 400;
-    line-height: 1.6;
+    line-height: 22px;
   }
 
   .edition :global(.meta) {
     color: var(--muted);
     font-family: var(--font-mono);
-    font-size: 11px;
-    letter-spacing: 0.04em;
+    font-size: 12px;
     line-height: 16px;
   }
 
   .more {
-    margin-top: 12px;
+    margin-top: 4px;
     color: var(--accent-text);
     font-family: var(--font-mono);
     font-size: 12px;
-    letter-spacing: 0.04em;
     line-height: 16px;
     text-decoration: none;
   }
