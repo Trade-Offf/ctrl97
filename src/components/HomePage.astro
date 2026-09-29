@@ -1,11 +1,12 @@
 ---
 import { getRelativeLocaleUrl } from "astro:i18n";
 import { getNotes, entrySlug } from "../lib/content";
-import { getProfiles } from "../data/profiles";
+import { getProfiles, getPupbrief } from "../data/profiles";
 import { presence } from "../data/site";
 import { formatDate, useTranslations, type Locale } from "../i18n/ui";
 import Button from "./Button.astro";
 import ProfileCard from "./ProfileCard.astro";
+import PupbriefCard from "./PupbriefCard.astro";
 import EmptyState from "./EmptyState.astro";
 import NoteItem from "./NoteItem.astro";
 import SectionHeader from "./SectionHeader.astro";
@@ -18,24 +19,28 @@ interface Props {
 const { locale } = Astro.props;
 const t = useTranslations(locale);
 const profiles = getProfiles(locale);
+const pupbrief = getPupbrief(locale);
 const latestNotes = (await getNotes(locale)).slice(0, 6);
 ---
 
 <div class="home">
-  <section class="hero">
-    <p class="eyebrow">{t.eyebrow}</p>
-    <h1>{t.title}</h1>
-    <p class="lede">{t.description}</p>
-    <p class="motto">{t.motto}</p>
-    <StatusBadge tone="accent">{presence}</StatusBadge>
-    <div class="actions">
-      <Button href={getRelativeLocaleUrl(locale, "/works")}>
-        {t.viewWorks}
-      </Button>
-      <Button href={getRelativeLocaleUrl(locale, "/notes")} variant="quiet">
-        {t.readNotes}
-      </Button>
+  <section class="intro">
+    <div class="hero">
+      <p class="eyebrow">{t.eyebrow}</p>
+      <h1>{t.title}</h1>
+      <p class="lede">{t.description}</p>
+      <p class="motto">{t.motto}</p>
+      <StatusBadge tone="accent">{presence}</StatusBadge>
+      <div class="actions">
+        <Button href={getRelativeLocaleUrl(locale, "/works")}>
+          {t.viewWorks}
+        </Button>
+        <Button href={getRelativeLocaleUrl(locale, "/notes")} variant="quiet">
+          {t.readNotes}
+        </Button>
+      </div>
     </div>
+    <PupbriefCard line={pupbrief} locale={locale} />
   </section>
 
   <section class="block" aria-labelledby="profiles-heading">
@@ -75,9 +80,15 @@ const latestNotes = (await getNotes(locale)).slice(0, 6);
     padding: 32px 0 48px;
   }
 
+  .intro {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+
   .hero {
     display: flex;
-    max-width: 720px;
+    min-width: 0;
     flex-direction: column;
     align-items: flex-start;
     gap: 16px;
@@ -124,6 +135,13 @@ const latestNotes = (await getNotes(locale)).slice(0, 6);
   }
 
   @media (min-width: 48rem) {
+    .intro {
+      display: grid;
+      grid-template-columns: minmax(0, 1.2fr) minmax(240px, 0.8fr);
+      align-items: start;
+    }
+
+    .profiles,
     .notes {
       grid-template-columns: repeat(2, minmax(0, 1fr));
     }

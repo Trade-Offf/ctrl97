@@ -6,6 +6,8 @@ export type RepositoryCard = {
   year: string;
   href: string;
   website?: string;
+  cover?: string;
+  coverAlt?: string;
 };
 
 /** 作品页上的公开仓库。星标大于 10，从高到低。快照 2026-09-28。 */
@@ -21,15 +23,8 @@ export const repositories = [
     year: "2026",
     href: "https://github.com/Trade-Offf/typhoon-bavi-tracker",
     website: "https://chinaupdated.com",
-  },
-  {
-    name: "responsiveWebsite",
-    description:
-      "做一个公司官网的前端部分，分为导航，轮播，关于我们，成功案例，服务流程，团队介绍，数据部分，公司动态，底部信息等内容区块。网站整体采用CSS Grid布局，支持响应式，有流畅过渡和展现动画。",
-    stars: 17,
-    language: "HTML",
-    year: "2020",
-    href: "https://github.com/Trade-Offf/responsiveWebsite",
+    cover: "/works/typhoon.webp",
+    coverAlt: "typhoon-bavi-tracker",
   },
   {
     name: "NextPPT",
@@ -40,6 +35,8 @@ export const repositories = [
     year: "2026",
     href: "https://github.com/Trade-Offf/NextPPT",
     website: "https://next-ppt.com/",
+    cover: "/works/nextppt.webp",
+    coverAlt: "NextPPT",
   },
   {
     name: "QuizPort",
@@ -49,5 +46,7 @@ export const repositories = [
     year: "2025",
     href: "https://github.com/Trade-Offf/QuizPort",
     website: "https://quizport.vercel.app",
+    cover: "/works/quizport.webp",
+    coverAlt: "QuizPort",
   },
 ] as const satisfies readonly RepositoryCard[];

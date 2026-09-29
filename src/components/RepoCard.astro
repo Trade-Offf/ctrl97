@@ -8,21 +8,21 @@ interface Props {
 
 const { repo, starsLabel } = Astro.props;
 const facts = [repo.language, repo.year].filter(Boolean).join(" · ");
-const host = repo.website
-  ? new URL(repo.website).host.replace(/^www\./, "")
-  : "";
+const host = repo.website ? new URL(repo.website).host.replace(/^www\./, "") : "";
 ---
 
 <a class="card" href={repo.href} rel="noopener noreferrer">
-  <p class="meta">
+  <span class="slot" aria-hidden="true"></span>
+  <span class="kicker">
     <span>{facts}</span>
-    <span class="stars">
+    <span>
       {repo.stars} {starsLabel}
     </span>
-  </p>
+  </span>
   <p class="name">{repo.name}</p>
   {repo.description && <p class="summary">{repo.description}</p>}
   {host && <p class="host">{host}</p>}
+  {repo.cover && <img class="figure" src={repo.cover} alt={repo.coverAlt ?? repo.name} />}
 </a>
 
 <style>
@@ -31,9 +31,9 @@ const host = repo.website
     min-width: 0;
     height: 100%;
     flex-direction: column;
-    padding: 12px;
+    padding: 16px 20px 18px;
     border: 1px solid var(--border);
-    border-radius: 12px;
+    border-radius: 18px;
     background: var(--surface);
     color: var(--text);
     text-decoration: none;
@@ -44,47 +44,61 @@ const host = repo.website
     text-decoration: none;
   }
 
-  .meta,
+  .slot {
+    display: block;
+    width: 58px;
+    height: 10px;
+    margin: 2px auto 14px;
+    border-radius: 999px;
+    background: var(--background);
+    box-shadow: inset 0 0 0 2px var(--border);
+  }
+
+  .kicker {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    color: var(--accent-text);
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    line-height: 16px;
+    text-transform: uppercase;
+  }
+
+  .name {
+    margin: 12px 0 0;
+    overflow-wrap: anywhere;
+    font-size: 28px;
+    font-weight: 600;
+    letter-spacing: -0.04em;
+    line-height: 1.1;
+  }
+
+  .summary {
+    display: -webkit-box;
+    margin: 10px 0 0;
+    overflow: hidden;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
+    color: var(--text);
+    font-size: 14px;
+    line-height: 1.7;
+  }
+
   .host {
-    margin: 0;
+    margin: 10px 0 0;
     color: var(--muted-strong);
     font-family: var(--font-mono);
     font-size: 12px;
     line-height: 16px;
   }
 
-  .meta {
-    display: flex;
-    gap: 8px;
-    justify-content: space-between;
-  }
-
-  .stars {
-    flex: none;
-    color: var(--text);
-  }
-
-  .name {
-    margin: 8px 0 0;
-    overflow-wrap: anywhere;
-    font-size: 16px;
-    font-weight: 500;
-    line-height: 24px;
-  }
-
-  .summary {
-    display: -webkit-box;
-    margin: 8px 0 0;
-    overflow: hidden;
-    -webkit-box-orient: vertical;
-    -webkit-line-clamp: 3;
-    color: var(--muted-strong);
-    font-size: 14px;
-    line-height: 22px;
-  }
-
-  .host {
-    margin-top: auto;
-    padding-top: 8px;
+  .figure {
+    display: block;
+    width: 100%;
+    height: auto;
+    margin-top: 14px;
+    border-radius: 8px;
   }
 </style>

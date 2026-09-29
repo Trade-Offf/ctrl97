@@ -141,7 +141,7 @@ About 的联系方式放两张卡片。掘金卡片使用公开主页上的 HiSt
 
 GitHub 卡片使用公开主页上的 Trade-Offf、简介，以及 Alibaba · Hangzhou。这个登录名只出现在卡片上，不代替 Rico。页脚的仓库链接仍指向 `https://github.com/Trade-Offf/ctrl97`，页面上仍不写属主名。
 
-汪汪简报只在「我正在做什么」放一句和 `https://pupbrief.com/`。没有核实过的发布日期，所以不放进作品集合，也不写用户数或是否收费。
+汪汪简报放在首页介绍右侧。卡片打开时读取 `https://pupbrief.com/api/embed` 的公开头版：刊期、最多五条标题，只有头条带一句判断。取不到时仍显示原来那句介绍。没有核实过的发布日期，所以不放进作品集合，也不写用户数或是否收费。
 
 ## D20 掘金文章进入笔记
 
@@ -163,9 +163,13 @@ GitHub 卡片使用公开主页上的 Trade-Offf、简介，以及 Alibaba · Ha
 
 首页不再罗列仓库。作品页改为这批仓库里星标大于 10 的四个，按星标从高到低：typhoon-bavi-tracker 40、responsiveWebsite 17、NextPPT 15、QuizPort 12。正好 10 星的 Rax2Taro 不放上去。示例作品改成草稿，不再出现在作品列表里。
 
+2020 年的 responsiveWebsite 不再放上作品页。剩下 typhoon-bavi-tracker、NextPPT、QuizPort。
+
 笔记列表改成按发布时间从新到旧的一条名单，不再按栏目拆成四组。文章页不再重复摘要，也不再把掘金标签铺成一排。
 
 ## D23 GitHub 卡片去掉公司信息
 
 GitHub 卡片不再写 Alibaba · Hangzhou。Rico 已经离职，这行不能再当近况。卡片改用本人提供的横幅，图里的句子是「我们能成为这个时代的维京海盗 / We could be the Vikings of our day.」。Trade-Offf 仍只出现在这张卡片上。
+
+横幅不铺满卡片顶部。公开账号仍是一排两列，这张图放在 GitHub 卡片文字下面，当作内容。两张卡片都是工牌：顶部一条挂绳孔，右上角标 CTRL97。颜色跟着站点的亮色和暗色走。
 
